@@ -1,0 +1,30 @@
+ros-humble-nao-lola (0.0.4-4bullseye) bullseye; urgency=high
+
+  * fix cpplint warning
+  * add changes to ci to test all distros
+  * Contributors: Kenji Brameld, ijnek
+
+ -- ijnek <kenjibrameld@gmail.com>  Fri, 04 Feb 2022 08:00:00 -0000
+
+ros-humble-nao-lola (0.0.3-4bullseye) bullseye; urgency=high
+
+  * add ament_cmake_gtest and boost dependency in package.xml and CMakeLists.txt
+  * Contributors: Kenji Brameld
+
+ -- ijnek <kenjibrameld@gmail.com>  Thu, 29 Jul 2021 07:00:00 -0000
+
+ros-humble-nao-lola (0.0.2-4bullseye) bullseye; urgency=high
+
+  * specify license and update package description
+  * Contributors: Kenji Brameld
+
+ -- ijnek <kenjibrameld@gmail.com>  Tue, 20 Jul 2021 07:00:00 -0000
+
+ros-humble-nao-lola (0.0.1-4bullseye) bullseye; urgency=high
+
+  * Initial impelementation
+  * Contributors: Kenji Brameld
+
+ -- ijnek <kenjibrameld@gmail.com>  Sat, 17 Jul 2021 07:00:00 -0000
+
+
