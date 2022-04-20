@@ -1,1 +1,1 @@
-{"base": "8421680", "parent": "debian/rolling/nao_lola", "previous": "550f2fa", "trim": "", "trimbase": ""}
+{"base": "e0a3c8f", "parent": "debian/humble/nao_lola", "previous": "3e5b4aa", "trim": "", "trimbase": ""}
