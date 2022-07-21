@@ -2,7 +2,7 @@
 Changelog for package nao_lola
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.1.0 (2022-07-21)
+0.2.0 (2022-07-21)
 ------------------
 * Split off galactic and humble branches
 * Fix status test to use int rather than float
