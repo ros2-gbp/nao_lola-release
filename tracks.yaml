@@ -14,16 +14,16 @@ tracks:
       :{release_inc} --os-name fedora
     - git-bloom-generate -y rosrpm --prefix release/:{ros_distro} :{ros_distro} -i
       :{release_inc} --os-name rhel
-    devel_branch: null
+    devel_branch: galactic
     last_version: 0.0.4
-    name: upstream
+    name: nao_lola
     patches: null
     release_inc: '1'
     release_repo_url: null
     release_tag: :{version}
     ros_distro: galactic
     vcs_type: git
-    vcs_uri: https://github.com/ijnek/nao_lola.git
+    vcs_uri: https://github.com/ros-sports/nao_lola.git
     version: :{auto}
   humble:
     actions:
