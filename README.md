@@ -1,3 +1,26 @@
+## nao_lola (humble) - 0.1.0-1
+
+The packages in the `nao_lola` repository were released into the `humble` distro by running `/usr/bin/bloom-release --rosdistro humble --track humble nao_lola -e --override-release-repository-url https://github.com/ros2-gbp/nao_lola-release.git` on `Thu, 21 Jul 2022 08:49:53 -0000`
+
+The `nao_lola` package was released.
+
+Version of package(s) in repository `nao_lola`:
+
+- upstream repository: https://github.com/ros-sports/nao_lola.git
+- release repository: https://github.com/ros2-gbp/nao_lola-release.git
+- rosdistro version: `0.0.4-4`
+- old version: `0.0.4-4`
+- new version: `0.1.0-1`
+
+Versions of tools used:
+
+- bloom version: `0.11.1`
+- catkin_pkg version: `0.5.2`
+- rosdep version: `0.22.1`
+- rosdistro version: `0.9.0`
+- vcstools version: `0.1.42`
+
+
 ## nao_lola (galactic) - 0.0.5-1
 
 The packages in the `nao_lola` repository were released into the `galactic` distro by running `/usr/bin/bloom-release --rosdistro galactic --track galactic nao_lola -e --override-release-repository-url https://github.com/ros2-gbp/nao_lola-release.git` on `Thu, 21 Jul 2022 08:45:15 -0000`
