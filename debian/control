@@ -1,0 +1,12 @@
+Source: ros-iron-nao-lola
+Section: misc
+Priority: optional
+Maintainer: ijnek <kenjibrameld@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), libboost-all-dev, ros-iron-ament-cmake, ros-iron-ament-cmake-gtest <!nocheck>, ros-iron-ament-lint-auto <!nocheck>, ros-iron-ament-lint-common <!nocheck>, ros-iron-nao-command-msgs, ros-iron-nao-sensor-msgs, ros-iron-rclcpp, ros-iron-ros-workspace
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-iron-nao-lola
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-all-dev, ros-iron-nao-command-msgs, ros-iron-nao-sensor-msgs, ros-iron-rclcpp, ros-iron-ros-workspace
+Description: Packages that allow communicating with the NAO’s Lola middle-ware.
