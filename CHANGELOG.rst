@@ -2,6 +2,11 @@
 Changelog for package nao_lola
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.1 (2023-04-28)
+------------------
+* fix race condition on packer
+* Contributors: ijnek
+
 0.1.0 (2022-07-21)
 ------------------
 * Split off galactic and humble branches
