@@ -2,7 +2,7 @@
 Changelog for package nao_lola
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.2.1 (2023-04-29)
+0.3.0 (2023-04-28)
 ------------------
 * Fix race condition on packer
 * Contributors: ijnek
