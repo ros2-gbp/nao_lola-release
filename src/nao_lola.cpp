@@ -46,14 +46,15 @@ NaoLola::NaoLola()
         robot_config_pub->publish(parsed.getRobotConfig());
 
 
-        // In mutex, copy packer
+        // In mutex, copy packer in and reset it
         // Do the pack and send outside mutex to avoid retain lock for a long time
-        MsgpackPacker packerCopy;
+        std::shared_ptr<MsgpackPacker> packerCopy;
         {
           std::lock_guard<std::mutex> guard(packer_mutex);
           packerCopy = packer;
+          packer = std::make_shared<MsgpackPacker>();
         }
-        connection.send(packerCopy.getPacked());
+        connection.send(packerCopy->getPacked());
       }
     });
 }
@@ -91,99 +92,99 @@ void NaoLola::createSubscriptions()
   joint_positions_sub =
     create_subscription<nao_command_msgs::msg::JointPositions>(
     "effectors/joint_positions", 1,
-    [this](const nao_command_msgs::msg::JointPositions & jointPositions) {
+    [this](nao_command_msgs::msg::JointPositions::SharedPtr jointPositions) {
       std::lock_guard<std::mutex> guard(packer_mutex);
-      packer.setJointPositions(jointPositions);
+      packer->setJointPositions(jointPositions);
     }
     );
 
   joint_stiffnesses_sub =
     create_subscription<nao_command_msgs::msg::JointStiffnesses>(
     "effectors/joint_stiffnesses", 1,
-    [this](const nao_command_msgs::msg::JointStiffnesses & jointStiffnesses) {
+    [this](nao_command_msgs::msg::JointStiffnesses::SharedPtr jointStiffnesses) {
       std::lock_guard<std::mutex> guard(packer_mutex);
-      packer.setJointStiffnesses(jointStiffnesses);
+      packer->setJointStiffnesses(jointStiffnesses);
     }
     );
 
   chest_led_sub =
     create_subscription<nao_command_msgs::msg::ChestLed>(
     "effectors/chest_led", 1,
-    [this](const nao_command_msgs::msg::ChestLed & chestLed) {
+    [this](nao_command_msgs::msg::ChestLed::SharedPtr chestLed) {
       std::lock_guard<std::mutex> guard(packer_mutex);
-      packer.setChestLed(chestLed);
+      packer->setChestLed(chestLed);
     }
     );
 
   left_ear_leds_sub =
     create_subscription<nao_command_msgs::msg::LeftEarLeds>(
     "effectors/left_ear_leds", 1,
-    [this](const nao_command_msgs::msg::LeftEarLeds & leftEarLeds) {
+    [this](nao_command_msgs::msg::LeftEarLeds::SharedPtr leftEarLeds) {
       std::lock_guard<std::mutex> guard(packer_mutex);
-      packer.setLeftEarLeds(leftEarLeds);
+      packer->setLeftEarLeds(leftEarLeds);
     }
     );
 
   right_ear_leds_sub =
     create_subscription<nao_command_msgs::msg::RightEarLeds>(
     "effectors/right_ear_leds", 1,
-    [this](const nao_command_msgs::msg::RightEarLeds & rightEarLeds) {
+    [this](nao_command_msgs::msg::RightEarLeds::SharedPtr rightEarLeds) {
       std::lock_guard<std::mutex> guard(packer_mutex);
-      packer.setRightEarLeds(rightEarLeds);
+      packer->setRightEarLeds(rightEarLeds);
     }
     );
 
   left_eye_leds_sub =
     create_subscription<nao_command_msgs::msg::LeftEyeLeds>(
     "effectors/left_eye_leds", 1,
-    [this](const nao_command_msgs::msg::LeftEyeLeds & leftEyeLeds) {
+    [this](nao_command_msgs::msg::LeftEyeLeds::SharedPtr leftEyeLeds) {
       std::lock_guard<std::mutex> guard(packer_mutex);
-      packer.setLeftEyeLeds(leftEyeLeds);
+      packer->setLeftEyeLeds(leftEyeLeds);
     }
     );
 
   right_eye_leds_sub =
     create_subscription<nao_command_msgs::msg::RightEyeLeds>(
     "effectors/right_eye_leds", 1,
-    [this](const nao_command_msgs::msg::RightEyeLeds & rightEyeLeds) {
+    [this](nao_command_msgs::msg::RightEyeLeds::SharedPtr rightEyeLeds) {
       std::lock_guard<std::mutex> guard(packer_mutex);
-      packer.setRightEyeLeds(rightEyeLeds);
+      packer->setRightEyeLeds(rightEyeLeds);
     }
     );
 
   left_foot_led_sub =
     create_subscription<nao_command_msgs::msg::LeftFootLed>(
     "effectors/left_foot_led", 1,
-    [this](const nao_command_msgs::msg::LeftFootLed & leftFootLed) {
+    [this](nao_command_msgs::msg::LeftFootLed::SharedPtr leftFootLed) {
       std::lock_guard<std::mutex> guard(packer_mutex);
-      packer.setLeftFootLed(leftFootLed);
+      packer->setLeftFootLed(leftFootLed);
     }
     );
 
   right_foot_led_sub =
     create_subscription<nao_command_msgs::msg::RightFootLed>(
     "effectors/right_foot_led", 1,
-    [this](const nao_command_msgs::msg::RightFootLed & rightFootLed) {
+    [this](nao_command_msgs::msg::RightFootLed::SharedPtr rightFootLed) {
       std::lock_guard<std::mutex> guard(packer_mutex);
-      packer.setRightFootLed(rightFootLed);
+      packer->setRightFootLed(rightFootLed);
     }
     );
 
   head_leds_sub =
     create_subscription<nao_command_msgs::msg::HeadLeds>(
     "effectors/head_leds", 1,
-    [this](const nao_command_msgs::msg::HeadLeds & headLeds) {
+    [this](nao_command_msgs::msg::HeadLeds::SharedPtr headLeds) {
       std::lock_guard<std::mutex> guard(packer_mutex);
-      packer.setHeadLeds(headLeds);
+      packer->setHeadLeds(headLeds);
     }
     );
 
   sonar_usage_sub =
     create_subscription<nao_command_msgs::msg::SonarUsage>(
     "effectors/sonar_usage", 1,
-    [this](const nao_command_msgs::msg::SonarUsage & sonarUsage) {
+    [this](nao_command_msgs::msg::SonarUsage::SharedPtr sonarUsage) {
       std::lock_guard<std::mutex> guard(packer_mutex);
-      packer.setSonarUsage(sonarUsage);
+      packer->setSonarUsage(sonarUsage);
     }
     );
   RCLCPP_DEBUG(get_logger(), "Finished creating subscriptions");

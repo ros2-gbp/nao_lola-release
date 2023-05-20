@@ -2,13 +2,7 @@
 Changelog for package nao_lola
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.2.2 (2023-05-20)
-------------------
-* Retain state of all effectors
-* Send effectors in every cycle
-* Contributors: ijnek
-
-0.2.1 (2023-04-28)
+0.3.0 (2023-04-28)
 ------------------
 * Fix race condition on packer
 * Contributors: ijnek
