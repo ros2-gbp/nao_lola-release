@@ -1,3 +1,26 @@
+## nao_lola (iron) - 0.2.2-1
+
+The packages in the `nao_lola` repository were released into the `iron` distro by running `/usr/bin/bloom-release --rosdistro iron nao_lola` on `Sat, 20 May 2023 17:20:00 -0000`
+
+The `nao_lola` package was released.
+
+Version of package(s) in repository `nao_lola`:
+
+- upstream repository: https://github.com/ros-sports/nao_lola.git
+- release repository: https://github.com/ros2-gbp/nao_lola-release.git
+- rosdistro version: `0.2.1-1`
+- old version: `0.2.1-1`
+- new version: `0.2.2-1`
+
+Versions of tools used:
+
+- bloom version: `0.11.2`
+- catkin_pkg version: `0.5.2`
+- rosdep version: `0.22.2`
+- rosdistro version: `0.9.0`
+- vcstools version: `0.1.42`
+
+
 ## nao_lola (humble) - 0.1.2-1
 
 The packages in the `nao_lola` repository were released into the `humble` distro by running `/usr/bin/bloom-release --rosdistro humble nao_lola` on `Sat, 20 May 2023 17:16:34 -0000`
