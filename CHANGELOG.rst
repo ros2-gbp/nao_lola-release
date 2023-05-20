@@ -2,18 +2,18 @@
 Changelog for package nao_lola
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.1.2 (2023-05-20)
+0.2.2 (2023-05-20)
 ------------------
 * Retain state of all effectors
 * Send effectors in every cycle
 * Contributors: ijnek
 
-0.1.1 (2023-04-28)
+0.2.1 (2023-04-28)
 ------------------
-* fix race condition on packer
+* Fix race condition on packer
 * Contributors: ijnek
 
-0.1.0 (2022-07-21)
+0.2.0 (2022-07-21)
 ------------------
 * Split off galactic and humble branches
 * Fix status test to use int rather than float
