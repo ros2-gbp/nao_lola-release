@@ -11,10 +11,11 @@
 #define MSGPACK_V1_ZBUFFER_HPP
 
 #include "msgpack/v1/zbuffer_decl.hpp"
-#include "msgpack/assert.hpp"
 
 #include <stdexcept>
 #include <zlib.h>
+
+#include <boost/assert.hpp>
 
 namespace msgpack {
 
@@ -47,7 +48,7 @@ public:
 public:
     void write(const char* buf, size_t len)
     {
-        MSGPACK_ASSERT(buf || len == 0);
+        BOOST_ASSERT(buf || len == 0);
         if (!buf) return;
 
         m_stream.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(buf));
