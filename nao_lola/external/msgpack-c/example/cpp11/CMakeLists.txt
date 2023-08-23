@@ -1,4 +1,8 @@
-IF (MSGPACK_CXX11 OR MSGPACK_CXX14 OR MSGPACK_CXX17)
+IF (MSGPACK_CXX11 OR MSGPACK_CXX17)
+    INCLUDE_DIRECTORIES (
+        ../include
+    )
+
     LIST (APPEND exec_PROGRAMS
         container.cpp
         non_def_con_class.cpp
@@ -16,8 +20,9 @@ IF (MSGPACK_CXX11 OR MSGPACK_CXX14 OR MSGPACK_CXX17)
             ${source_file_we}
             ${source_file}
         )
-        TARGET_LINK_LIBRARIES (${source_file_we} PRIVATE
-            msgpack-cxx
+        TARGET_INCLUDE_DIRECTORIES (${source_file_we}
+            PRIVATE
+                $<TARGET_PROPERTY:msgpackcxx,INTERFACE_INCLUDE_DIRECTORIES>
         )
         IF ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
             SET_PROPERTY (TARGET ${source_file_we} APPEND_STRING PROPERTY COMPILE_FLAGS " -Wall -Wextra")

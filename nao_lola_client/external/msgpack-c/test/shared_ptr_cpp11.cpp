@@ -2,15 +2,24 @@
 #include <sstream>
 #include <iterator>
 
-#define BOOST_TEST_MODULE SHARED_PTR
-#include <boost/test/unit_test.hpp>
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif //defined(__GNUC__)
+
+#include <gtest/gtest.h>
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif //defined(__GNUC__)
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #if !defined(MSGPACK_USE_CPP03)
 
-BOOST_AUTO_TEST_CASE(pack_convert_nil)
+TEST(SHARED_PTR, pack_convert_nil)
 {
     std::stringstream ss;
     std::shared_ptr<int> val1;
@@ -19,10 +28,10 @@ BOOST_AUTO_TEST_CASE(pack_convert_nil)
     msgpack::object_handle oh =
         msgpack::unpack(str.data(), str.size());
     std::shared_ptr<int> val2 = oh.get().as<std::shared_ptr<int>>();
-    BOOST_CHECK(val1 == val2);
+    EXPECT_TRUE(val1 == val2);
 }
 
-BOOST_AUTO_TEST_CASE(pack_convert_int)
+TEST(SHARED_PTR, pack_convert_int)
 {
     std::stringstream ss;
     std::shared_ptr<int> val1(new int(1));
@@ -31,54 +40,54 @@ BOOST_AUTO_TEST_CASE(pack_convert_int)
     msgpack::object_handle oh =
         msgpack::unpack(str.data(), str.size());
     std::shared_ptr<int> val2 = oh.get().as<std::shared_ptr<int>>();
-    BOOST_CHECK(*val1 == *val2);
+    EXPECT_TRUE(*val1 == *val2);
 }
 
-BOOST_AUTO_TEST_CASE(object_nil)
+TEST(SHARED_PTR, object_nil)
 {
     std::shared_ptr<int> val1;
     msgpack::object obj(val1);
     std::shared_ptr<int> val2 = obj.as<std::shared_ptr<int>>();
-    BOOST_CHECK(val1 == val2);
+    EXPECT_TRUE(val1 == val2);
 }
 
-BOOST_AUTO_TEST_CASE(object_int)
+TEST(SHARED_PTR, object_int)
 {
     std::shared_ptr<int> val1(new int(1));
     msgpack::object obj(val1);
     std::shared_ptr<int> val2 = obj.as<std::shared_ptr<int>>();
-    BOOST_CHECK(*val1 == *val2);
+    EXPECT_TRUE(*val1 == *val2);
 }
 
 // Compile error as expected
 // object::with_zone is required not object
 /*
-BOOST_AUTO_TEST_CASE(object_vector)
+TEST(SHARED_PTR, object_vector)
 {
     typedef std::shared_ptr<std::vector<int>> ovi_t;
     ovi_t val1(new std::vector<int>());
     msgpack::object obj(val1);
     ovi_t  val2 = obj.as<ovi_t>();
-    BOOST_CHECK(val1 == val2);
+    EXPECT_TRUE(val1 == val2);
 }
 */
 
-BOOST_AUTO_TEST_CASE(object_with_zone_nil)
+TEST(SHARED_PTR, object_with_zone_nil)
 {
     msgpack::zone z;
     std::shared_ptr<int> val1;
     msgpack::object obj(val1, z);
     std::shared_ptr<int> val2 = obj.as<std::shared_ptr<int>>();
-    BOOST_CHECK(val1 == val2);
+    EXPECT_TRUE(val1 == val2);
 }
 
-BOOST_AUTO_TEST_CASE(object_with_zone_int)
+TEST(SHARED_PTR, object_with_zone_int)
 {
     msgpack::zone z;
     std::shared_ptr<int> val1(new int(1));
     msgpack::object obj(val1, z);
     std::shared_ptr<int> val2 = obj.as<std::shared_ptr<int>>();
-    BOOST_CHECK(*val1 == *val2);
+    EXPECT_TRUE(*val1 == *val2);
 }
 
 struct no_def_con {
@@ -111,7 +120,7 @@ struct as<no_def_con> {
 } // MSGPACK_API_VERSION_NAMESPACE(MSGPACK_DEFAULT_API_NS)
 } // msgpack
 
-BOOST_AUTO_TEST_CASE(pack_convert_nil_no_def_con)
+TEST(SHARED_PTR, pack_convert_nil_no_def_con)
 {
     std::stringstream ss;
     std::shared_ptr<no_def_con> val1(new no_def_con(1));
@@ -120,7 +129,7 @@ BOOST_AUTO_TEST_CASE(pack_convert_nil_no_def_con)
     msgpack::object_handle oh =
         msgpack::unpack(str.data(), str.size());
     std::shared_ptr<no_def_con> val2 = oh.get().as<std::shared_ptr<no_def_con>>();
-    BOOST_CHECK(*val1 == *val2);
+    EXPECT_TRUE(*val1 == *val2);
 }
 
 

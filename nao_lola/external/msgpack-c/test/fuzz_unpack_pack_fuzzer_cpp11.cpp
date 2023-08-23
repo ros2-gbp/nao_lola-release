@@ -1,9 +1,17 @@
-#define BOOST_TEST_MODULE FUZZ_UNPACK_PACK_FUZZER
-#include <boost/test/unit_test.hpp>
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif //defined(__GNUC__)
+
+#include <gtest/gtest.h>
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif //defined(__GNUC__)
 
 #include "../fuzz/unpack_pack_fuzzer.cpp"
 
-BOOST_AUTO_TEST_CASE(works)
+TEST(FUZZ_UNPACK_PACK_FUZZER, works)
 {
-  BOOST_CHECK_EQUAL(0, LLVMFuzzerTestOneInput(MSGPACK_NULLPTR, 0));
+  EXPECT_EQ(0, LLVMFuzzerTestOneInput(0, 0));
 }

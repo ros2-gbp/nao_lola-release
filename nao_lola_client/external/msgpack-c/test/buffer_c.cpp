@@ -3,10 +3,18 @@
 #include <msgpack/sbuffer.h>
 #include <msgpack/vrefbuffer.h>
 
-#define BOOST_TEST_MODULE buffer
-#include <boost/test/unit_test.hpp>
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif //defined(__GNUC__)
 
-#include <cstring>
+#include <gtest/gtest.h>
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif //defined(__GNUC__)
+
+#include <string.h>
 
 #if defined(unix) || defined(__unix) || defined(__linux__) || defined(__APPLE__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__QNX__) || defined(__QNXTO__) || defined(__HAIKU__)
 #define HAVE_SYS_UIO_H 1
@@ -14,21 +22,21 @@
 #define HAVE_SYS_UIO_H 0
 #endif
 
-BOOST_AUTO_TEST_CASE(zbuffer_c)
+TEST(buffer, zbuffer_c)
 {
     msgpack_zbuffer zbuf;
-    BOOST_CHECK(msgpack_zbuffer_init(&zbuf, 1, MSGPACK_ZBUFFER_INIT_SIZE));
-    BOOST_CHECK_EQUAL(0, msgpack_zbuffer_write(&zbuf, "a", 1));
-    BOOST_CHECK_EQUAL(0, msgpack_zbuffer_write(&zbuf, "a", 1));
-    BOOST_CHECK_EQUAL(0, msgpack_zbuffer_write(&zbuf, "a", 1));
-    BOOST_CHECK_EQUAL(0, msgpack_zbuffer_write(&zbuf, "", 0));
+    EXPECT_TRUE(msgpack_zbuffer_init(&zbuf, 1, MSGPACK_ZBUFFER_INIT_SIZE));
+    EXPECT_EQ(0, msgpack_zbuffer_write(&zbuf, "a", 1));
+    EXPECT_EQ(0, msgpack_zbuffer_write(&zbuf, "a", 1));
+    EXPECT_EQ(0, msgpack_zbuffer_write(&zbuf, "a", 1));
+    EXPECT_EQ(0, msgpack_zbuffer_write(&zbuf, "", 0));
 
-    BOOST_CHECK(msgpack_zbuffer_flush(&zbuf) != NULL);
+    EXPECT_TRUE(msgpack_zbuffer_flush(&zbuf) != NULL);
 
     msgpack_zbuffer_destroy(&zbuf);
 }
 
-BOOST_AUTO_TEST_CASE(fbuffer_c)
+TEST(buffer, fbuffer_c)
 {
 #if defined(_MSC_VER)
     FILE* file;
@@ -39,45 +47,45 @@ BOOST_AUTO_TEST_CASE(fbuffer_c)
 
     void* fbuf = (void*)file;
 
-    BOOST_CHECK( file != NULL );
-    BOOST_CHECK_EQUAL(0, msgpack_fbuffer_write(fbuf, "a", 1));
-    BOOST_CHECK_EQUAL(0, msgpack_fbuffer_write(fbuf, "a", 1));
-    BOOST_CHECK_EQUAL(0, msgpack_fbuffer_write(fbuf, "a", 1));
+    EXPECT_TRUE( file != NULL );
+    EXPECT_EQ(0, msgpack_fbuffer_write(fbuf, "a", 1));
+    EXPECT_EQ(0, msgpack_fbuffer_write(fbuf, "a", 1));
+    EXPECT_EQ(0, msgpack_fbuffer_write(fbuf, "a", 1));
 
     fflush(file);
     rewind(file);
     for (size_t i=0; i < 3; ++i) {
         int ch = fgetc(file);
-        BOOST_CHECK(ch != EOF);
-        BOOST_CHECK_EQUAL('a', (char) ch);
+        EXPECT_TRUE(ch != EOF);
+        EXPECT_EQ('a', (char) ch);
     }
-    BOOST_CHECK_EQUAL(EOF, fgetc(file));
+    EXPECT_EQ(EOF, fgetc(file));
     fclose(file);
 }
 
-BOOST_AUTO_TEST_CASE(sbuffer_c)
+TEST(buffer, sbuffer_c)
 {
     msgpack_sbuffer *sbuf;
     char *data;
 
     sbuf = msgpack_sbuffer_new();
-    BOOST_CHECK(sbuf != NULL);
-    BOOST_CHECK_EQUAL(0, msgpack_sbuffer_write(sbuf, "a", 1));
-    BOOST_CHECK_EQUAL(0, msgpack_sbuffer_write(sbuf, "b", 1));
-    BOOST_CHECK_EQUAL(0, msgpack_sbuffer_write(sbuf, "c", 1));
-    BOOST_CHECK_EQUAL(0, msgpack_sbuffer_write(sbuf, "", 0));
-    BOOST_CHECK_EQUAL(3U, sbuf->size);
-    BOOST_CHECK_EQUAL(0, memcmp(sbuf->data, "abc", 3));
+    EXPECT_TRUE(sbuf != NULL);
+    EXPECT_EQ(0, msgpack_sbuffer_write(sbuf, "a", 1));
+    EXPECT_EQ(0, msgpack_sbuffer_write(sbuf, "b", 1));
+    EXPECT_EQ(0, msgpack_sbuffer_write(sbuf, "c", 1));
+    EXPECT_EQ(0, msgpack_sbuffer_write(sbuf, "", 0));
+    EXPECT_EQ(3U, sbuf->size);
+    EXPECT_EQ(0, memcmp(sbuf->data, "abc", 3));
     data = msgpack_sbuffer_release(sbuf);
-    BOOST_CHECK_EQUAL(0, memcmp(data, "abc", 3));
-    BOOST_CHECK_EQUAL(0U, sbuf->size);
-    BOOST_CHECK(sbuf->data == NULL);
+    EXPECT_EQ(0, memcmp(data, "abc", 3));
+    EXPECT_EQ(0U, sbuf->size);
+    EXPECT_TRUE(sbuf->data == NULL);
 
     free(data);
     msgpack_sbuffer_free(sbuf);
 }
 
-BOOST_AUTO_TEST_CASE(vrefbuffer_c)
+TEST(buffer, vrefbuffer_c)
 {
     const char *raw = "I was about to sail away in a junk,"
                       "When suddenly I heard"
@@ -119,7 +127,7 @@ BOOST_AUTO_TEST_CASE(vrefbuffer_c)
         len = (size_t)lseek(fd, 0, SEEK_END);
         lseek(fd, 0, SEEK_SET);
         read(fd, buf, len);
-        BOOST_CHECK_EQUAL(0, memcmp(buf, raw, len));
+        EXPECT_EQ(0, memcmp(buf, raw, len));
         close(fd);
         unlink(filename);
     }
@@ -132,7 +140,7 @@ BOOST_AUTO_TEST_CASE(vrefbuffer_c)
             memcpy(buf + len, iov[i].iov_base, iov[i].iov_len);
             len += iov[i].iov_len;
         }
-        BOOST_CHECK_EQUAL(0, memcmp(buf, raw, len));
+        EXPECT_EQ(0, memcmp(buf, raw, len));
     }
 #endif
     free(buf);
