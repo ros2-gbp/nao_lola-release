@@ -1,11 +1,21 @@
 #include <msgpack.hpp>
 
-#define BOOST_TEST_MODULE iterator
-#include <boost/test/unit_test.hpp>
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif //defined(__GNUC__)
+
+#include <gtest/gtest.h>
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif //defined(__GNUC__)
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+using namespace std;
 
 #if !defined(MSGPACK_USE_CPP03)
 #include <iterator>
@@ -15,13 +25,13 @@
 constexpr unsigned int VECTOR_SIZE = 100;
 constexpr unsigned int MAP_SIZE    = 100;
 
-BOOST_AUTO_TEST_CASE(vector)
+TEST(iterator, vector)
 {
-    using vec_type = std::vector<unsigned>;
+    using vec_type = vector<unsigned int>;
     vec_type vec;
     vec.reserve(VECTOR_SIZE);
     for (unsigned int i = 0; i < VECTOR_SIZE; i++) {
-        vec.push_back(static_cast<unsigned>(rand()));
+        vec.push_back(static_cast<unsigned int>(rand()));
     }
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, vec);
@@ -32,22 +42,22 @@ BOOST_AUTO_TEST_CASE(vector)
     auto const& msgarr = oh.get().via.array;
     auto dist = std::distance(begin(msgarr), end(msgarr));
     auto vecSize = vec.size();
-    BOOST_CHECK_EQUAL(static_cast<size_t>(dist), vecSize);
+    EXPECT_EQ(static_cast<size_t>(dist), vecSize);
 
     vec_type::const_iterator correct = std::begin(vec);
     for (auto const& obj : msgarr) {
         auto u64 = *correct;
-        BOOST_CHECK_EQUAL(obj.as<unsigned>(), u64);
+        EXPECT_EQ(obj.as<unsigned int>(), u64);
         ++correct;
     }
 }
 
-BOOST_AUTO_TEST_CASE(map)
+TEST(iterator, map)
 {
-    using map_type = std::map<unsigned, unsigned>;
+    using map_type = map<unsigned int, unsigned int>;
     map_type map;
-    for (unsigned i = 0; i < MAP_SIZE; i++) {
-        map[static_cast<unsigned>(rand())] = static_cast<unsigned>(rand());
+    for (unsigned int i = 0; i < MAP_SIZE; i++) {
+        map[static_cast<unsigned int>(rand())] = static_cast<unsigned int>(rand());
     }
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, map);
@@ -58,13 +68,13 @@ BOOST_AUTO_TEST_CASE(map)
     auto const& msgmap = oh.get().via.map;
     auto dist = std::distance(begin(msgmap), end(msgmap));
     auto mapSize = map.size();
-    BOOST_CHECK_EQUAL(static_cast<size_t>(dist), mapSize);
+    EXPECT_EQ(static_cast<size_t>(dist), mapSize);
 
     for (auto const& kv : msgmap) {
-        auto key = kv.key.as<unsigned>();
-        auto val = kv.val.as<unsigned>();
+        auto key = kv.key.as<unsigned int>();
+        auto val = kv.val.as<unsigned int>();
         auto correct = map[key];
-        BOOST_CHECK_EQUAL(val, correct);
+        EXPECT_EQ(val, correct);
     }
 }
 

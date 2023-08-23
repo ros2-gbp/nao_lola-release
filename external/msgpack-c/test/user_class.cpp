@@ -2,12 +2,22 @@
 #include <string>
 #include <cmath>
 
-#define BOOST_TEST_MODULE MSGPACK_USER_DEFINED
-#include <boost/test/unit_test.hpp>
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif //defined(__GNUC__)
+
+#include <gtest/gtest.h>
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif //defined(__GNUC__)
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+
 
 using namespace std;
 
@@ -47,7 +57,7 @@ public:
     MSGPACK_DEFINE(i, s);
 };
 
-BOOST_AUTO_TEST_CASE(simple_buffer_class)
+TEST(MSGPACK_USER_DEFINED, simple_buffer_class)
 {
     for (unsigned int k = 0; k < kLoop; k++) {
         TestClass val1;
@@ -56,8 +66,8 @@ BOOST_AUTO_TEST_CASE(simple_buffer_class)
         msgpack::object_handle oh =
             msgpack::unpack(sbuf.data(), sbuf.size());
         TestClass val2 = oh.get().as<TestClass>();
-        BOOST_CHECK_EQUAL(val1.i, val2.i);
-        BOOST_CHECK_EQUAL(val1.s, val2.s);
+        EXPECT_EQ(val1.i, val2.i);
+        EXPECT_EQ(val1.s, val2.s);
     }
 }
 
@@ -74,7 +84,7 @@ public:
     MSGPACK_DEFINE(i, s, v);
 };
 
-BOOST_AUTO_TEST_CASE(simple_buffer_class_old_to_new)
+TEST(MSGPACK_USER_DEFINED, simple_buffer_class_old_to_new)
 {
     for (unsigned int k = 0; k < kLoop; k++) {
         TestClass val1;
@@ -83,13 +93,13 @@ BOOST_AUTO_TEST_CASE(simple_buffer_class_old_to_new)
         msgpack::object_handle oh =
             msgpack::unpack(sbuf.data(), sbuf.size());
         TestClass2 val2 = oh.get().as<TestClass2>();
-        BOOST_CHECK_EQUAL(val1.i, val2.i);
-        BOOST_CHECK_EQUAL(val1.s, val2.s);
-        BOOST_CHECK(!val2.s.empty());
+        EXPECT_EQ(val1.i, val2.i);
+        EXPECT_EQ(val1.s, val2.s);
+        EXPECT_FALSE(val2.s.empty());
     }
 }
 
-BOOST_AUTO_TEST_CASE(simple_buffer_class_new_to_old)
+TEST(MSGPACK_USER_DEFINED, simple_buffer_class_new_to_old)
 {
     for (unsigned int k = 0; k < kLoop; k++) {
         TestClass2 val1;
@@ -98,13 +108,13 @@ BOOST_AUTO_TEST_CASE(simple_buffer_class_new_to_old)
         msgpack::object_handle oh =
             msgpack::unpack(sbuf.data(), sbuf.size());
         TestClass val2 = oh.get().as<TestClass>();
-        BOOST_CHECK_EQUAL(val1.i, val2.i);
-        BOOST_CHECK_EQUAL(val1.s, val2.s);
-        BOOST_CHECK(!val2.s.empty());
+        EXPECT_EQ(val1.i, val2.i);
+        EXPECT_EQ(val1.s, val2.s);
+        EXPECT_FALSE(val2.s.empty());
     }
 }
 
-BOOST_AUTO_TEST_CASE(simple_buffer_enum_member)
+TEST(MSGPACK_USER_DEFINED, simple_buffer_enum_member)
 {
     TestEnumMemberClass val1;
     msgpack::sbuffer sbuf;
@@ -112,9 +122,9 @@ BOOST_AUTO_TEST_CASE(simple_buffer_enum_member)
     msgpack::object_handle oh =
         msgpack::unpack(sbuf.data(), sbuf.size());
     TestEnumMemberClass val2 = oh.get().as<TestEnumMemberClass>();
-    BOOST_CHECK_EQUAL(val1.t1, val2.t1);
-    BOOST_CHECK_EQUAL(val1.t2, val2.t2);
-    BOOST_CHECK_EQUAL(val1.t3, val2.t3);
+    EXPECT_EQ(val1.t1, val2.t1);
+    EXPECT_EQ(val1.t2, val2.t2);
+    EXPECT_EQ(val1.t3, val2.t3);
 }
 
 class TestUnionMemberClass
@@ -151,21 +161,21 @@ public:
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif // defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)) && !defined(__clang__)
-        msgpack::type::tuple<bool, msgpack::object> tuple;
+        msgpack::type::tuple<bool, msgpack::object> tuple(false, msgpack::object());
         o.convert(tuple);
 
         is_double = tuple.get<0>();
         if (is_double)
-            tuple.get<1>().convert<double>(value.f);
+            tuple.get<1>().convert(value.f);
         else
-            tuple.get<1>().convert<int>(value.i);
+            tuple.get<1>().convert(value.i);
 #if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif // defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)) && !defined(__clang__)
     }
 };
 
-BOOST_AUTO_TEST_CASE(simple_buffer_union_member)
+TEST(MSGPACK_USER_DEFINED, simple_buffer_union_member)
 {
 #if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)) && !defined(__clang__)
 #pragma GCC diagnostic push
@@ -179,8 +189,8 @@ BOOST_AUTO_TEST_CASE(simple_buffer_union_member)
         msgpack::object_handle oh =
             msgpack::unpack(sbuf.data(), sbuf.size());
         TestUnionMemberClass val2 = oh.get().as<TestUnionMemberClass>();
-        BOOST_CHECK_EQUAL(val1.is_double, val2.is_double);
-        BOOST_CHECK(fabs(val1.value.f - val2.value.f) < kEPS);
+        EXPECT_EQ(val1.is_double, val2.is_double);
+        EXPECT_TRUE(fabs(val1.value.f - val2.value.f) < kEPS);
     }
     {
         // int
@@ -190,9 +200,9 @@ BOOST_AUTO_TEST_CASE(simple_buffer_union_member)
         msgpack::object_handle oh =
             msgpack::unpack(sbuf.data(), sbuf.size());
         TestUnionMemberClass val2 = oh.get().as<TestUnionMemberClass>();
-        BOOST_CHECK_EQUAL(val1.is_double, val2.is_double);
-        BOOST_CHECK_EQUAL(val1.value.i, 1);
-        BOOST_CHECK_EQUAL(val1.value.i, val2.value.i);
+        EXPECT_EQ(val1.is_double, val2.is_double);
+        EXPECT_EQ(val1.value.i, 1);
+        EXPECT_EQ(val1.value.i, val2.value.i);
     }
 #if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)) && !defined(__clang__)
 #pragma GCC diagnostic pop
@@ -223,7 +233,7 @@ struct d_bottom : d_mid1, d_mid2 {
     MSGPACK_DEFINE(MSGPACK_BASE(d_mid1), MSGPACK_BASE(d_mid2), b);
 };
 
-BOOST_AUTO_TEST_CASE(inherit_define_non_virtual)
+TEST(MSGPACK_INHERIT, define_non_virtual)
 {
     d_bottom b;
     b.b = 1;
@@ -236,11 +246,11 @@ BOOST_AUTO_TEST_CASE(inherit_define_non_virtual)
     msgpack::object_handle oh =
         msgpack::unpack(sbuf.data(), sbuf.size());
     d_bottom br = oh.get().as<d_bottom>();
-    BOOST_CHECK_EQUAL(b.b, br.b);
-    BOOST_CHECK_EQUAL(b.m1, br.m1);
-    BOOST_CHECK_EQUAL(b.m2, br.m2);
-    BOOST_CHECK_EQUAL(b.d_mid1::t, br.d_mid1::t);
-    BOOST_CHECK_EQUAL(b.d_mid2::t, br.d_mid2::t);
+    EXPECT_EQ(b.b, br.b);
+    EXPECT_EQ(b.m1, br.m1);
+    EXPECT_EQ(b.m2, br.m2);
+    EXPECT_EQ(b.d_mid1::t, br.d_mid1::t);
+    EXPECT_EQ(b.d_mid2::t, br.d_mid2::t);
 }
 
 struct v_d_top {
@@ -263,7 +273,7 @@ struct v_d_bottom : v_d_mid1, v_d_mid2 {
     MSGPACK_DEFINE(MSGPACK_BASE(v_d_mid1), MSGPACK_BASE(v_d_mid2), MSGPACK_BASE(v_d_top), b);
 };
 
-BOOST_AUTO_TEST_CASE(inherit_define_virtual)
+TEST(MSGPACK_INHERIT, define_virtual)
 {
     v_d_bottom b;
     b.b = 1;
@@ -275,10 +285,10 @@ BOOST_AUTO_TEST_CASE(inherit_define_virtual)
     msgpack::object_handle oh =
         msgpack::unpack(sbuf.data(), sbuf.size());
     v_d_bottom br = oh.get().as<v_d_bottom>();
-    BOOST_CHECK_EQUAL(b.b, br.b);
-    BOOST_CHECK_EQUAL(b.m1, br.m1);
-    BOOST_CHECK_EQUAL(b.m2, br.m2);
-    BOOST_CHECK_EQUAL(b.t, br.t);
+    EXPECT_EQ(b.b, br.b);
+    EXPECT_EQ(b.m1, br.m1);
+    EXPECT_EQ(b.m2, br.m2);
+    EXPECT_EQ(b.t, br.t);
 }
 
 // define_array
@@ -303,7 +313,7 @@ struct da_bottom : da_mid1, da_mid2 {
     MSGPACK_DEFINE_ARRAY(MSGPACK_BASE_ARRAY(da_mid1), MSGPACK_BASE_ARRAY(da_mid2), b);
 };
 
-BOOST_AUTO_TEST_CASE(inherit_define_array_non_virtual)
+TEST(MSGPACK_INHERIT, define_array_non_virtual)
 {
     da_bottom b;
     b.b = 1;
@@ -316,11 +326,11 @@ BOOST_AUTO_TEST_CASE(inherit_define_array_non_virtual)
     msgpack::object_handle oh =
         msgpack::unpack(sbuf.data(), sbuf.size());
     da_bottom br = oh.get().as<da_bottom>();
-    BOOST_CHECK_EQUAL(b.b, br.b);
-    BOOST_CHECK_EQUAL(b.m1, br.m1);
-    BOOST_CHECK_EQUAL(b.m2, br.m2);
-    BOOST_CHECK_EQUAL(b.da_mid1::t, br.da_mid1::t);
-    BOOST_CHECK_EQUAL(b.da_mid2::t, br.da_mid2::t);
+    EXPECT_EQ(b.b, br.b);
+    EXPECT_EQ(b.m1, br.m1);
+    EXPECT_EQ(b.m2, br.m2);
+    EXPECT_EQ(b.da_mid1::t, br.da_mid1::t);
+    EXPECT_EQ(b.da_mid2::t, br.da_mid2::t);
 }
 
 struct v_da_top {
@@ -343,7 +353,7 @@ struct v_da_bottom : v_da_mid1, v_da_mid2 {
     MSGPACK_DEFINE_ARRAY(MSGPACK_BASE_ARRAY(v_da_mid1), MSGPACK_BASE_ARRAY(v_da_mid2), MSGPACK_BASE_ARRAY(v_da_top), b);
 };
 
-BOOST_AUTO_TEST_CASE(inherit_define_array_virtual)
+TEST(MSGPACK_INHERIT, define_array_virtual)
 {
     v_da_bottom b;
     b.b = 1;
@@ -355,10 +365,10 @@ BOOST_AUTO_TEST_CASE(inherit_define_array_virtual)
     msgpack::object_handle oh =
         msgpack::unpack(sbuf.data(), sbuf.size());
     v_da_bottom br = oh.get().as<v_da_bottom>();
-    BOOST_CHECK_EQUAL(b.b, br.b);
-    BOOST_CHECK_EQUAL(b.m1, br.m1);
-    BOOST_CHECK_EQUAL(b.m2, br.m2);
-    BOOST_CHECK_EQUAL(b.t, br.t);
+    EXPECT_EQ(b.b, br.b);
+    EXPECT_EQ(b.m1, br.m1);
+    EXPECT_EQ(b.m2, br.m2);
+    EXPECT_EQ(b.t, br.t);
 }
 
 // define_map
@@ -383,7 +393,7 @@ struct dm_bottom : dm_mid1, dm_mid2 {
     MSGPACK_DEFINE_MAP(MSGPACK_BASE_MAP(dm_mid1), MSGPACK_BASE_MAP(dm_mid2), b);
 };
 
-BOOST_AUTO_TEST_CASE(inherit_define_map_non_virtual)
+TEST(MSGPACK_INHERIT, define_map_non_virtual)
 {
     dm_bottom b;
     b.b = 1;
@@ -403,11 +413,11 @@ BOOST_AUTO_TEST_CASE(inherit_define_map_non_virtual)
 #if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif // defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)) && !defined(__clang__)
-    BOOST_CHECK_EQUAL(b.b, br.b);
-    BOOST_CHECK_EQUAL(b.m1, br.m1);
-    BOOST_CHECK_EQUAL(b.m2, br.m2);
-    BOOST_CHECK_EQUAL(b.dm_mid1::t, br.dm_mid1::t);
-    BOOST_CHECK_EQUAL(b.dm_mid2::t, br.dm_mid2::t);
+    EXPECT_EQ(b.b, br.b);
+    EXPECT_EQ(b.m1, br.m1);
+    EXPECT_EQ(b.m2, br.m2);
+    EXPECT_EQ(b.dm_mid1::t, br.dm_mid1::t);
+    EXPECT_EQ(b.dm_mid2::t, br.dm_mid2::t);
 }
 
 struct v_dm_top {
@@ -430,7 +440,7 @@ struct v_dm_bottom : v_dm_mid1, v_dm_mid2 {
     MSGPACK_DEFINE_MAP(MSGPACK_BASE_MAP(v_dm_mid1), MSGPACK_BASE_MAP(v_dm_mid2), MSGPACK_BASE_MAP(v_dm_top), b);
 };
 
-BOOST_AUTO_TEST_CASE(inherit_define_map_virtual)
+TEST(MSGPACK_INHERIT, define_map_virtual)
 {
     v_dm_bottom b;
     b.b = 1;
@@ -442,10 +452,10 @@ BOOST_AUTO_TEST_CASE(inherit_define_map_virtual)
     msgpack::object_handle oh =
         msgpack::unpack(sbuf.data(), sbuf.size());
     v_dm_bottom br = oh.get().as<v_dm_bottom>();
-    BOOST_CHECK_EQUAL(b.b, br.b);
-    BOOST_CHECK_EQUAL(b.m1, br.m1);
-    BOOST_CHECK_EQUAL(b.m2, br.m2);
-    BOOST_CHECK_EQUAL(b.t, br.t);
+    EXPECT_EQ(b.b, br.b);
+    EXPECT_EQ(b.m1, br.m1);
+    EXPECT_EQ(b.m2, br.m2);
+    EXPECT_EQ(b.t, br.t);
 }
 
 // map migration
@@ -465,7 +475,7 @@ struct s_v2 {
     MSGPACK_DEFINE_MAP(c, s, i); // variable added, order changed
 };
 
-BOOST_AUTO_TEST_CASE(migration_order_number_changed)
+TEST(MSGPACK_MIGRATION, order_number_changed)
 {
     s_v1 v1;
     msgpack::sbuffer sbuf;
@@ -475,9 +485,9 @@ BOOST_AUTO_TEST_CASE(migration_order_number_changed)
         msgpack::unpack(sbuf.data(), sbuf.size());
     s_v2 v2 = oh.get().as<s_v2>();
 
-    BOOST_CHECK_EQUAL(v2.c, 'A');
-    BOOST_CHECK_EQUAL(v2.s, "foo"); // from v1
-    BOOST_CHECK_EQUAL(v2.i, 42);    // from v1
+    EXPECT_EQ(v2.c, 'A');
+    EXPECT_EQ(v2.s, "foo"); // from v1
+    EXPECT_EQ(v2.i, 42);    // from v1
 }
 
 // non intrusive with operator <<
@@ -531,7 +541,7 @@ struct object_with_zone<test_non_intrusive>
 } // MSGPACK_API_VERSION_NAMESPACE(MSGPACK_DEFAULT_API_NS)
 } // namespace msgpack
 
-BOOST_AUTO_TEST_CASE(test_non_intrusive_)
+TEST(MSGPACK_USER_DEFINED, test_non_intrusive)
 {
     test_non_intrusive t1;
     msgpack::sbuffer sbuf;
@@ -541,7 +551,7 @@ BOOST_AUTO_TEST_CASE(test_non_intrusive_)
         msgpack::unpack(sbuf.data(), sbuf.size());
     test_non_intrusive t2 = oh.get().as<test_non_intrusive>();
 
-    BOOST_CHECK_EQUAL(t1.name(), t2.name());
+    EXPECT_EQ(t1.name(), t2.name());
 }
 
 struct nvp_base {
@@ -556,7 +566,7 @@ struct nvp_derived : nvp_base {
     MSGPACK_DEFINE_MAP(MSGPACK_NVP("ccc", c), MSGPACK_NVP("base", MSGPACK_BASE(nvp_base)), MSGPACK_NVP("ddd", d));
 };
 
-BOOST_AUTO_TEST_CASE(nvp_combination)
+TEST(MSGPACK_NVP, combination)
 {
     msgpack::sbuffer sbuf;
     nvp_derived d1;
@@ -569,36 +579,36 @@ BOOST_AUTO_TEST_CASE(nvp_combination)
     msgpack::object_handle oh = msgpack::unpack(sbuf.data(), sbuf.size());
     msgpack::object obj = oh.get();
 
-    BOOST_CHECK_EQUAL(obj.via.map.size, static_cast<size_t>(3));
+    EXPECT_EQ(obj.via.map.size, static_cast<size_t>(3));
 
-    BOOST_CHECK_EQUAL(std::string(obj.via.map.ptr[0].key.via.str.ptr, obj.via.map.ptr[0].key.via.str.size), "ccc");
-    BOOST_CHECK_EQUAL(obj.via.map.ptr[0].val.via.i64, 3);
+    EXPECT_EQ(std::string(obj.via.map.ptr[0].key.via.str.ptr, obj.via.map.ptr[0].key.via.str.size), "ccc");
+    EXPECT_EQ(obj.via.map.ptr[0].val.via.i64, 3);
 
-    BOOST_CHECK_EQUAL(std::string(obj.via.map.ptr[1].key.via.str.ptr, obj.via.map.ptr[1].key.via.str.size), "base");
-    BOOST_CHECK_EQUAL(obj.via.map.ptr[1].val.via.map.size, static_cast<size_t>(2));
-    BOOST_CHECK_EQUAL(
+    EXPECT_EQ(std::string(obj.via.map.ptr[1].key.via.str.ptr, obj.via.map.ptr[1].key.via.str.size), "base");
+    EXPECT_EQ(obj.via.map.ptr[1].val.via.map.size, static_cast<size_t>(2));
+    EXPECT_EQ(
         std::string(
             obj.via.map.ptr[1].val.via.map.ptr[0].key.via.str.ptr,
             obj.via.map.ptr[1].val.via.map.ptr[0].key.via.str.size),
         "aaa"
     );
-    BOOST_CHECK_EQUAL(obj.via.map.ptr[1].val.via.map.ptr[0].val.via.i64, 1);
-    BOOST_CHECK_EQUAL(
+    EXPECT_EQ(obj.via.map.ptr[1].val.via.map.ptr[0].val.via.i64, 1);
+    EXPECT_EQ(
         std::string(
             obj.via.map.ptr[1].val.via.map.ptr[1].key.via.str.ptr,
             obj.via.map.ptr[1].val.via.map.ptr[1].key.via.str.size),
         "b"
     );
-    BOOST_CHECK_EQUAL(obj.via.map.ptr[1].val.via.map.ptr[1].val.via.i64, 2);
+    EXPECT_EQ(obj.via.map.ptr[1].val.via.map.ptr[1].val.via.i64, 2);
 
-    BOOST_CHECK_EQUAL(std::string(obj.via.map.ptr[2].key.via.str.ptr, obj.via.map.ptr[2].key.via.str.size), "ddd");
-    BOOST_CHECK_EQUAL(std::string(obj.via.map.ptr[2].val.via.str.ptr, obj.via.map.ptr[2].val.via.str.size), "ABC");
+    EXPECT_EQ(std::string(obj.via.map.ptr[2].key.via.str.ptr, obj.via.map.ptr[2].key.via.str.size), "ddd");
+    EXPECT_EQ(std::string(obj.via.map.ptr[2].val.via.str.ptr, obj.via.map.ptr[2].val.via.str.size), "ABC");
 
     nvp_derived d2 = obj.as<nvp_derived>();
-    BOOST_CHECK_EQUAL(d2.a, 1);
-    BOOST_CHECK_EQUAL(d2.b, 2);
-    BOOST_CHECK_EQUAL(d2.c, 3);
-    BOOST_CHECK_EQUAL(d2.d, "ABC");
+    EXPECT_EQ(d2.a, 1);
+    EXPECT_EQ(d2.b, 2);
+    EXPECT_EQ(d2.c, 3);
+    EXPECT_EQ(d2.d, "ABC");
 }
 
 struct invalid_key {
@@ -606,7 +616,7 @@ struct invalid_key {
     MSGPACK_DEFINE_MAP(val);
 };
 
-BOOST_AUTO_TEST_CASE(test_invalid_key_type)
+TEST(MSGPACK_USER_DEFINED, test_invalid_key_type)
 {
     msgpack::sbuffer sbuf;
     msgpack::packer<msgpack::sbuffer> pk(sbuf);
@@ -616,12 +626,12 @@ BOOST_AUTO_TEST_CASE(test_invalid_key_type)
     msgpack::object_handle oh = msgpack::unpack(sbuf.data(), sbuf.size());
     try {
         oh.get().as<invalid_key>();
-        BOOST_CHECK(false);
+        EXPECT_TRUE(false);
     }
     catch (msgpack::type_error const&) {
-        BOOST_CHECK(true);
+        EXPECT_TRUE(true);
     }
     catch (...) {
-        BOOST_CHECK(false);
+        EXPECT_TRUE(false);
     }
 }
