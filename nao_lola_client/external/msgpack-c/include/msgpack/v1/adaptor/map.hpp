@@ -10,8 +10,6 @@
 #ifndef MSGPACK_V1_TYPE_MAP_HPP
 #define MSGPACK_V1_TYPE_MAP_HPP
 
-#include "msgpack/versioning.hpp"
-#include "msgpack/cpp_version.hpp"
 #include "msgpack/v1/adaptor/map_decl.hpp"
 #include "msgpack/adaptor/adaptor_base.hpp"
 
@@ -156,13 +154,13 @@ struct convert<std::map<K, V, Compare, Alloc> > {
         for (; p != pend; ++p) {
             K key;
             p->key.convert(key);
-#if MSGPACK_CPP_VERSION >= 201103L
+#if __cplusplus >= 201103L
             p->val.convert(tmp[std::move(key)]);
 #else
             p->val.convert(tmp[key]);
 #endif
         }
-#if MSGPACK_CPP_VERSION >= 201103L
+#if __cplusplus >= 201103L
         v = std::move(tmp);
 #else
         tmp.swap(v);
@@ -250,13 +248,13 @@ struct convert<std::multimap<K, V, Compare, Alloc> > {
             std::pair<K, V> value;
             p->key.convert(value.first);
             p->val.convert(value.second);
-#if MSGPACK_CPP_VERSION >= 201103L
+#if __cplusplus >= 201103L
             tmp.insert(std::move(value));
 #else
             tmp.insert(value);
 #endif
         }
-#if MSGPACK_CPP_VERSION >= 201103L
+#if __cplusplus >= 201103L
         v = std::move(tmp);
 #else
         tmp.swap(v);
