@@ -11,10 +11,11 @@
 #define MSGPACK_V1_FBUFFER_HPP
 
 #include "msgpack/v1/fbuffer_decl.hpp"
-#include "msgpack/assert.hpp"
 
 #include <cstdio>
 #include <stdexcept>
+
+#include <boost/assert.hpp>
 
 namespace msgpack {
 
@@ -29,7 +30,7 @@ public:
 public:
     void write(const char* buf, unsigned int len)
     {
-        MSGPACK_ASSERT(buf || len == 0);
+        BOOST_ASSERT(buf || len == 0);
         if (!buf) return;
         if (1 != fwrite(buf, len, 1, m_file)) {
             throw std::runtime_error("fwrite() failed");

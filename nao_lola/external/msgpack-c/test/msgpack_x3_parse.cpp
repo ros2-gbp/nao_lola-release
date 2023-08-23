@@ -4,11 +4,19 @@
 #include <limits>
 #include <cmath>
 
-#define BOOST_TEST_MODULE MSGPACK_X3_PARSE
-#include <boost/test/unit_test.hpp>
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif //defined(__GNUC__)
+
+#include <gtest/gtest.h>
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif //defined(__GNUC__)
 
 // To avoid link error
-BOOST_AUTO_TEST_CASE(dummy)
+TEST(MSGPACK_X3_PARSE, dummy)
 {
 }
 
@@ -18,247 +26,247 @@ using namespace std;
 
 const double kEPS = 1e-10;
 
-BOOST_AUTO_TEST_CASE(nil_t)
+TEST(MSGPACK_X3_PARSE, nil_t)
 {
     msgpack::type::nil_t v;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(oh.get().is_nil());
+    EXPECT_TRUE(oh.get().is_nil());
 }
 
-BOOST_AUTO_TEST_CASE(bool_false)
+TEST(MSGPACK_X3_PARSE, bool_false)
 {
     bool v = false;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<bool>());
+    EXPECT_EQ(v, oh.get().as<bool>());
 }
 
-BOOST_AUTO_TEST_CASE(bool_true)
+TEST(MSGPACK_X3_PARSE, bool_true)
 {
     bool v = true;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<bool>());
+    EXPECT_EQ(v, oh.get().as<bool>());
 }
 
-BOOST_AUTO_TEST_CASE(positive_fixint_1)
+TEST(MSGPACK_X3_PARSE, positive_fixint_1)
 {
     uint8_t v = 0;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<uint8_t>());
+    EXPECT_EQ(v, oh.get().as<uint8_t>());
 }
 
-BOOST_AUTO_TEST_CASE(positive_fixint_2)
+TEST(MSGPACK_X3_PARSE, positive_fixint_2)
 {
     uint8_t v = 127;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<uint8_t>());
+    EXPECT_EQ(v, oh.get().as<uint8_t>());
 }
 
-BOOST_AUTO_TEST_CASE(negative_fixint_1)
+TEST(MSGPACK_X3_PARSE, negative_fixint_1)
 {
     int8_t v = -1;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<int8_t>());
+    EXPECT_EQ(v, oh.get().as<int8_t>());
 }
 
-BOOST_AUTO_TEST_CASE(negative_fixint_2)
+TEST(MSGPACK_X3_PARSE, negative_fixint_2)
 {
     int8_t v = -32;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<int8_t>());
+    EXPECT_EQ(v, oh.get().as<int8_t>());
 }
 
-BOOST_AUTO_TEST_CASE(uint8_1)
+TEST(MSGPACK_X3_PARSE, uint8_1)
 {
     uint8_t v = 128U;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<uint8_t>());
+    EXPECT_EQ(v, oh.get().as<uint8_t>());
 }
 
-BOOST_AUTO_TEST_CASE(uint8_2)
+TEST(MSGPACK_X3_PARSE, uint8_2)
 {
     uint8_t v = 0xffU;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<uint8_t>());
+    EXPECT_EQ(v, oh.get().as<uint8_t>());
 }
 
-BOOST_AUTO_TEST_CASE(uint16_1)
+TEST(MSGPACK_X3_PARSE, uint16_1)
 {
     uint16_t v = 0x100U;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<uint16_t>());
+    EXPECT_EQ(v, oh.get().as<uint16_t>());
 }
 
-BOOST_AUTO_TEST_CASE(uint16_2)
+TEST(MSGPACK_X3_PARSE, uint16_2)
 {
     uint16_t v = 0xffffU;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<uint16_t>());
+    EXPECT_EQ(v, oh.get().as<uint16_t>());
 }
 
-BOOST_AUTO_TEST_CASE(uint32_1)
+TEST(MSGPACK_X3_PARSE, uint32_1)
 {
     uint32_t v = 0x10000UL;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<uint32_t>());
+    EXPECT_EQ(v, oh.get().as<uint32_t>());
 }
 
-BOOST_AUTO_TEST_CASE(uint32_2)
+TEST(MSGPACK_X3_PARSE, uint32_2)
 {
     uint32_t v = 0xffffffffUL;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<uint32_t>());
+    EXPECT_EQ(v, oh.get().as<uint32_t>());
 }
 
-BOOST_AUTO_TEST_CASE(uint64_1)
+TEST(MSGPACK_X3_PARSE, uint64_1)
 {
     uint64_t v = 0x100000000ULL;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<uint64_t>());
+    EXPECT_EQ(v, oh.get().as<uint64_t>());
 }
 
-BOOST_AUTO_TEST_CASE(uint64_2)
+TEST(MSGPACK_X3_PARSE, uint64_2)
 {
     uint64_t v = 0xffffffffffffffffULL;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<uint64_t>());
+    EXPECT_EQ(v, oh.get().as<uint64_t>());
 }
 
-BOOST_AUTO_TEST_CASE(int8_1)
+TEST(MSGPACK_X3_PARSE, int8_1)
 {
     int8_t v = static_cast<int8_t>(0b11011111);
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<int8_t>());
+    EXPECT_EQ(v, oh.get().as<int8_t>());
 }
 
-BOOST_AUTO_TEST_CASE(int8_2)
+TEST(MSGPACK_X3_PARSE, int8_2)
 {
     int8_t v = static_cast<int8_t>(0b10000000);
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<int8_t>());
+    EXPECT_EQ(v, oh.get().as<int8_t>());
 }
 
-BOOST_AUTO_TEST_CASE(int16_1)
+TEST(MSGPACK_X3_PARSE, int16_1)
 {
     int16_t v = static_cast<int16_t>(0xff00);
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<int16_t>());
+    EXPECT_EQ(v, oh.get().as<int16_t>());
 }
 
-BOOST_AUTO_TEST_CASE(int16_2)
+TEST(MSGPACK_X3_PARSE, int16_2)
 {
     int16_t v = static_cast<int16_t>(0x8000);
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<int16_t>());
+    EXPECT_EQ(v, oh.get().as<int16_t>());
 }
 
-BOOST_AUTO_TEST_CASE(int32_1)
+TEST(MSGPACK_X3_PARSE, int32_1)
 {
     int32_t v = static_cast<int32_t>(0xff000000L);
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<int32_t>());
+    EXPECT_EQ(v, oh.get().as<int32_t>());
 }
 
-BOOST_AUTO_TEST_CASE(int32_2)
+TEST(MSGPACK_X3_PARSE, int32_2)
 {
     int32_t v = static_cast<int32_t>(0x80000000L);
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<int32_t>());
+    EXPECT_EQ(v, oh.get().as<int32_t>());
 }
 
-BOOST_AUTO_TEST_CASE(int64_1)
+TEST(MSGPACK_X3_PARSE, int64_1)
 {
     int64_t v = static_cast<int64_t>(0xff00000000000000LL);
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<int64_t>());
+    EXPECT_EQ(v, oh.get().as<int64_t>());
 }
 
-BOOST_AUTO_TEST_CASE(int64_2)
+TEST(MSGPACK_X3_PARSE, int64_2)
 {
     int64_t v = static_cast<int64_t>(0x8000000000000000LL);
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<int64_t>());
+    EXPECT_EQ(v, oh.get().as<int64_t>());
 }
 
-BOOST_AUTO_TEST_CASE(array_1)
+TEST(MSGPACK_X3_PARSE, array_1)
 {
     std::vector<int> v;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == oh.get().as<std::vector<int> >());
+    EXPECT_EQ(v, oh.get().as<std::vector<int> >());
 }
 
-BOOST_AUTO_TEST_CASE(array_2)
+TEST(MSGPACK_X3_PARSE, array_2)
 {
     std::vector<int> v;
     std::stringstream ss;
@@ -266,10 +274,10 @@ BOOST_AUTO_TEST_CASE(array_2)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == oh.get().as<std::vector<int> >());
+    EXPECT_EQ(v, oh.get().as<std::vector<int> >());
 }
 
-BOOST_AUTO_TEST_CASE(array_3)
+TEST(MSGPACK_X3_PARSE, array_3)
 {
     std::vector<int> v;
     std::stringstream ss;
@@ -277,10 +285,10 @@ BOOST_AUTO_TEST_CASE(array_3)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == oh.get().as<std::vector<int> >());
+    EXPECT_EQ(v, oh.get().as<std::vector<int> >());
 }
 
-BOOST_AUTO_TEST_CASE(array_4)
+TEST(MSGPACK_X3_PARSE, array_4)
 {
     std::vector<int> v;
     std::stringstream ss;
@@ -288,10 +296,10 @@ BOOST_AUTO_TEST_CASE(array_4)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == oh.get().as<std::vector<int> >());
+    EXPECT_EQ(v, oh.get().as<std::vector<int> >());
 }
 
-BOOST_AUTO_TEST_CASE(array_5)
+TEST(MSGPACK_X3_PARSE, array_5)
 {
     std::vector<uint32_t> v;
     std::stringstream ss;
@@ -299,20 +307,20 @@ BOOST_AUTO_TEST_CASE(array_5)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == oh.get().as<std::vector<uint32_t> >());
+    EXPECT_EQ(v, oh.get().as<std::vector<uint32_t> >());
 }
 
-BOOST_AUTO_TEST_CASE(map_1)
+TEST(MSGPACK_X3_PARSE, map_1)
 {
     std::map<int, int> v;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == (oh.get().as<std::map<int, int> >()));
+    EXPECT_EQ(v, (oh.get().as<std::map<int, int> >()));
 }
 
-BOOST_AUTO_TEST_CASE(map_2)
+TEST(MSGPACK_X3_PARSE, map_2)
 {
     std::map<int, int> v;
     std::stringstream ss;
@@ -320,10 +328,10 @@ BOOST_AUTO_TEST_CASE(map_2)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == (oh.get().as<std::map<int, int> >()));
+    EXPECT_EQ(v, (oh.get().as<std::map<int, int> >()));
 }
 
-BOOST_AUTO_TEST_CASE(map_3)
+TEST(MSGPACK_X3_PARSE, map_3)
 {
     std::map<int, int> v;
     std::stringstream ss;
@@ -331,10 +339,10 @@ BOOST_AUTO_TEST_CASE(map_3)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == (oh.get().as<std::map<int, int> >()));
+    EXPECT_EQ(v, (oh.get().as<std::map<int, int> >()));
 }
 
-BOOST_AUTO_TEST_CASE(map_4)
+TEST(MSGPACK_X3_PARSE, map_4)
 {
     std::map<int, int> v;
     std::stringstream ss;
@@ -342,10 +350,10 @@ BOOST_AUTO_TEST_CASE(map_4)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == (oh.get().as<std::map<int, int> >()));
+    EXPECT_EQ(v, (oh.get().as<std::map<int, int> >()));
 }
 
-BOOST_AUTO_TEST_CASE(map_5)
+TEST(MSGPACK_X3_PARSE, map_5)
 {
     std::map<uint32_t, uint32_t> v;
     std::stringstream ss;
@@ -353,10 +361,10 @@ BOOST_AUTO_TEST_CASE(map_5)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == (oh.get().as<std::map<uint32_t, uint32_t> >()));
+    EXPECT_EQ(v, (oh.get().as<std::map<uint32_t, uint32_t> >()));
 }
 
-BOOST_AUTO_TEST_CASE(float_1)
+TEST(MSGPACK_X3_PARSE, float_1)
 {
     std::vector<float> v;
     v.push_back(0.0);
@@ -386,15 +394,15 @@ BOOST_AUTO_TEST_CASE(float_1)
         float val2 = oh.get().as<float>();
 
         if (std::isnan(val1))
-            BOOST_CHECK(std::isnan(val2));
+            EXPECT_TRUE(std::isnan(val2));
         else if (std::isinf(val1))
-            BOOST_CHECK(std::isinf(val2));
+            EXPECT_TRUE(std::isinf(val2));
         else
-            BOOST_CHECK(fabs(val2 - val1) <= kEPS);
+            EXPECT_TRUE(fabs(val2 - val1) <= kEPS);
     }
 }
 
-BOOST_AUTO_TEST_CASE(double_1)
+TEST(MSGPACK_X3_PARSE, double_1)
 {
     std::vector<double> v;
     v.push_back(0.0);
@@ -424,25 +432,25 @@ BOOST_AUTO_TEST_CASE(double_1)
         double val2 = oh.get().as<double>();
 
         if (std::isnan(val1))
-            BOOST_CHECK(std::isnan(val2));
+            EXPECT_TRUE(std::isnan(val2));
         else if (std::isinf(val1))
-            BOOST_CHECK(std::isinf(val2));
+            EXPECT_TRUE(std::isinf(val2));
         else
-            BOOST_CHECK(fabs(val2 - val1) <= kEPS);
+            EXPECT_TRUE(fabs(val2 - val1) <= kEPS);
     }
 }
 
-BOOST_AUTO_TEST_CASE(string_1)
+TEST(MSGPACK_X3_PARSE, string_1)
 {
     std::string v;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<std::string>());
+    EXPECT_EQ(v, oh.get().as<std::string>());
 }
 
-BOOST_AUTO_TEST_CASE(string_2)
+TEST(MSGPACK_X3_PARSE, string_2)
 {
     std::string v;
 
@@ -452,10 +460,10 @@ BOOST_AUTO_TEST_CASE(string_2)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<std::string>());
+    EXPECT_EQ(v, oh.get().as<std::string>());
 }
 
-BOOST_AUTO_TEST_CASE(string_3)
+TEST(MSGPACK_X3_PARSE, string_3)
 {
     std::string v;
 
@@ -465,10 +473,10 @@ BOOST_AUTO_TEST_CASE(string_3)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<std::string>());
+    EXPECT_EQ(v, oh.get().as<std::string>());
 }
 
-BOOST_AUTO_TEST_CASE(string_4)
+TEST(MSGPACK_X3_PARSE, string_4)
 {
     std::string v;
 
@@ -478,10 +486,10 @@ BOOST_AUTO_TEST_CASE(string_4)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<std::string>());
+    EXPECT_EQ(v, oh.get().as<std::string>());
 }
 
-BOOST_AUTO_TEST_CASE(string_5)
+TEST(MSGPACK_X3_PARSE, string_5)
 {
     std::string v;
 
@@ -491,10 +499,10 @@ BOOST_AUTO_TEST_CASE(string_5)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<std::string>());
+    EXPECT_EQ(v, oh.get().as<std::string>());
 }
 
-BOOST_AUTO_TEST_CASE(string_6)
+TEST(MSGPACK_X3_PARSE, string_6)
 {
     std::string v;
 
@@ -504,20 +512,20 @@ BOOST_AUTO_TEST_CASE(string_6)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, oh.get().as<std::string>());
+    EXPECT_EQ(v, oh.get().as<std::string>());
 }
 
-BOOST_AUTO_TEST_CASE(bin_1)
+TEST(MSGPACK_X3_PARSE, bin_1)
 {
     std::vector<char> v;
     std::stringstream ss;
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == oh.get().as<std::vector<char>>());
+    EXPECT_EQ(v, oh.get().as<std::vector<char>>());
 }
 
-BOOST_AUTO_TEST_CASE(bin_2)
+TEST(MSGPACK_X3_PARSE, bin_2)
 {
     std::vector<char> v;
 
@@ -527,10 +535,10 @@ BOOST_AUTO_TEST_CASE(bin_2)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == oh.get().as<std::vector<char>>());
+    EXPECT_EQ(v, oh.get().as<std::vector<char>>());
 }
 
-BOOST_AUTO_TEST_CASE(bin_3)
+TEST(MSGPACK_X3_PARSE, bin_3)
 {
     std::vector<char> v;
 
@@ -540,10 +548,10 @@ BOOST_AUTO_TEST_CASE(bin_3)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == oh.get().as<std::vector<char>>());
+    EXPECT_EQ(v, oh.get().as<std::vector<char>>());
 }
 
-BOOST_AUTO_TEST_CASE(bin_4)
+TEST(MSGPACK_X3_PARSE, bin_4)
 {
     std::vector<char> v;
 
@@ -553,10 +561,10 @@ BOOST_AUTO_TEST_CASE(bin_4)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == oh.get().as<std::vector<char>>());
+    EXPECT_EQ(v, oh.get().as<std::vector<char>>());
 }
 
-BOOST_AUTO_TEST_CASE(bin_5)
+TEST(MSGPACK_X3_PARSE, bin_5)
 {
     std::vector<char> v;
 
@@ -566,10 +574,10 @@ BOOST_AUTO_TEST_CASE(bin_5)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == oh.get().as<std::vector<char>>());
+    EXPECT_EQ(v, oh.get().as<std::vector<char>>());
 }
 
-BOOST_AUTO_TEST_CASE(bin_6)
+TEST(MSGPACK_X3_PARSE, bin_6)
 {
     std::vector<char> v;
 
@@ -579,10 +587,10 @@ BOOST_AUTO_TEST_CASE(bin_6)
     msgpack::pack(ss, v);
 
     auto oh = msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK(v == oh.get().as<std::vector<char>>());
+    EXPECT_EQ(v, oh.get().as<std::vector<char>>());
 }
 
-BOOST_AUTO_TEST_CASE(fixext1)
+TEST(MSGPACK_X3_PARSE, fixext1)
 {
     std::stringstream ss;
     msgpack::packer<std::stringstream> packer(ss);
@@ -592,12 +600,12 @@ BOOST_AUTO_TEST_CASE(fixext1)
     packer.pack_ext_body(buf, sizeof(buf));
     msgpack::object_handle oh =
         msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(1ul, oh.get().via.ext.size);
-    BOOST_CHECK_EQUAL(1, oh.get().via.ext.type());
-    BOOST_CHECK_EQUAL(2, oh.get().via.ext.data()[0]);
+    EXPECT_EQ(1ul, oh.get().via.ext.size);
+    EXPECT_EQ(1, oh.get().via.ext.type());
+    EXPECT_EQ(2, oh.get().via.ext.data()[0]);
 }
 
-BOOST_AUTO_TEST_CASE(fixext2)
+TEST(MSGPACK_X3_PARSE, fixext2)
 {
     std::stringstream ss;
     msgpack::packer<std::stringstream> packer(ss);
@@ -607,13 +615,13 @@ BOOST_AUTO_TEST_CASE(fixext2)
     packer.pack_ext_body(buf, sizeof(buf));
     msgpack::object_handle oh =
         msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(2ul, oh.get().via.ext.size);
-    BOOST_CHECK_EQUAL(0, oh.get().via.ext.type());
-    BOOST_CHECK(
+    EXPECT_EQ(2ul, oh.get().via.ext.size);
+    EXPECT_EQ(0, oh.get().via.ext.type());
+    EXPECT_TRUE(
         std::equal(buf, buf + sizeof(buf), oh.get().via.ext.data()));
 }
 
-BOOST_AUTO_TEST_CASE(fixext4)
+TEST(MSGPACK_X3_PARSE, fixext4)
 {
     std::stringstream ss;
     msgpack::packer<std::stringstream> packer(ss);
@@ -623,13 +631,13 @@ BOOST_AUTO_TEST_CASE(fixext4)
     packer.pack_ext_body(buf, sizeof(buf));
     msgpack::object_handle oh =
         msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(4ul, oh.get().via.ext.size);
-    BOOST_CHECK_EQUAL(1, oh.get().via.ext.type());
-    BOOST_CHECK(
+    EXPECT_EQ(4ul, oh.get().via.ext.size);
+    EXPECT_EQ(1, oh.get().via.ext.type());
+    EXPECT_TRUE(
         std::equal(buf, buf + sizeof(buf), oh.get().via.ext.data()));
 }
 
-BOOST_AUTO_TEST_CASE(fixext8)
+TEST(MSGPACK_X3_PARSE, fixext8)
 {
     std::stringstream ss;
     msgpack::packer<std::stringstream> packer(ss);
@@ -639,13 +647,13 @@ BOOST_AUTO_TEST_CASE(fixext8)
     packer.pack_ext_body(buf, sizeof(buf));
     msgpack::object_handle oh =
         msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(8ul, oh.get().via.ext.size);
-    BOOST_CHECK_EQUAL(1, oh.get().via.ext.type());
-    BOOST_CHECK(
+    EXPECT_EQ(8ul, oh.get().via.ext.size);
+    EXPECT_EQ(1, oh.get().via.ext.type());
+    EXPECT_TRUE(
         std::equal(buf, buf + sizeof(buf), oh.get().via.ext.data()));
 }
 
-BOOST_AUTO_TEST_CASE(fixext16)
+TEST(MSGPACK_X3_PARSE, fixext16)
 {
     std::stringstream ss;
     msgpack::packer<std::stringstream> packer(ss);
@@ -655,13 +663,13 @@ BOOST_AUTO_TEST_CASE(fixext16)
     packer.pack_ext_body(buf, sizeof(buf));
     msgpack::object_handle oh =
         msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(16ul, oh.get().via.ext.size);
-    BOOST_CHECK_EQUAL(1, oh.get().via.ext.type());
-    BOOST_CHECK(
+    EXPECT_EQ(16ul, oh.get().via.ext.size);
+    EXPECT_EQ(1, oh.get().via.ext.type());
+    EXPECT_TRUE(
         std::equal(buf, buf + sizeof(buf), oh.get().via.ext.data()));
 }
 
-BOOST_AUTO_TEST_CASE(ext_0)
+TEST(MSGPACK_X3_PARSE, ext_0)
 {
     std::size_t const size = 0;
     std::stringstream ss;
@@ -670,11 +678,11 @@ BOOST_AUTO_TEST_CASE(ext_0)
     packer.pack_ext(size, 77);
     msgpack::object_handle oh =
         msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(size, oh.get().via.ext.size);
-    BOOST_CHECK_EQUAL(77, oh.get().via.ext.type());
+    EXPECT_EQ(size, oh.get().via.ext.size);
+    EXPECT_EQ(77, oh.get().via.ext.type());
 }
 
-BOOST_AUTO_TEST_CASE(ext_255)
+TEST(MSGPACK_X3_PARSE, ext_255)
 {
     std::size_t const size = 255;
     std::stringstream ss;
@@ -686,13 +694,13 @@ BOOST_AUTO_TEST_CASE(ext_255)
 
     msgpack::object_handle oh =
         msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(size, oh.get().via.ext.size);
-    BOOST_CHECK_EQUAL(77, oh.get().via.ext.type());
-    BOOST_CHECK(
+    EXPECT_EQ(size, oh.get().via.ext.size);
+    EXPECT_EQ(77, oh.get().via.ext.type());
+    EXPECT_TRUE(
         std::equal(buf, buf + sizeof(buf), oh.get().via.ext.data()));
 }
 
-BOOST_AUTO_TEST_CASE(ext_256)
+TEST(MSGPACK_X3_PARSE, ext_256)
 {
     std::size_t const size = 256;
     std::stringstream ss;
@@ -704,13 +712,13 @@ BOOST_AUTO_TEST_CASE(ext_256)
 
     msgpack::object_handle oh =
         msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(size, oh.get().via.ext.size);
-    BOOST_CHECK_EQUAL(77, oh.get().via.ext.type());
-    BOOST_CHECK(
+    EXPECT_EQ(size, oh.get().via.ext.size);
+    EXPECT_EQ(77, oh.get().via.ext.type());
+    EXPECT_TRUE(
         std::equal(buf, buf + sizeof(buf), oh.get().via.ext.data()));
 }
 
-BOOST_AUTO_TEST_CASE(ext_65535)
+TEST(MSGPACK_X3_PARSE, ext_65535)
 {
     std::size_t const size = 65535;
     std::stringstream ss;
@@ -722,13 +730,13 @@ BOOST_AUTO_TEST_CASE(ext_65535)
 
     msgpack::object_handle oh =
         msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(size, oh.get().via.ext.size);
-    BOOST_CHECK_EQUAL(77, oh.get().via.ext.type());
-    BOOST_CHECK(
+    EXPECT_EQ(size, oh.get().via.ext.size);
+    EXPECT_EQ(77, oh.get().via.ext.type());
+    EXPECT_TRUE(
         std::equal(buf, buf + sizeof(buf), oh.get().via.ext.data()));
 }
 
-BOOST_AUTO_TEST_CASE(ext_65536)
+TEST(MSGPACK_X3_PARSE, ext_65536)
 {
     std::size_t const size = 65536;
     std::stringstream ss;
@@ -740,13 +748,13 @@ BOOST_AUTO_TEST_CASE(ext_65536)
 
     msgpack::object_handle oh =
         msgpack::unpack(ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(size, oh.get().via.ext.size);
-    BOOST_CHECK_EQUAL(77, oh.get().via.ext.type());
-    BOOST_CHECK(
+    EXPECT_EQ(size, oh.get().via.ext.size);
+    EXPECT_EQ(77, oh.get().via.ext.type());
+    EXPECT_TRUE(
         std::equal(buf, buf + sizeof(buf), oh.get().via.ext.data()));
 }
 
-BOOST_AUTO_TEST_CASE(unpack_referenced_1)
+TEST(MSGPACK_X3_PARSE, unpack_referenced_1)
 {
     std::string v = "ABC";
     std::stringstream ss;
@@ -755,11 +763,11 @@ BOOST_AUTO_TEST_CASE(unpack_referenced_1)
     bool r;
     msgpack::object_handle oh =
         msgpack::unpack(ss.str().begin(), ss.str().end(), r);
-    BOOST_CHECK(!r);
-    BOOST_CHECK_EQUAL(v, oh.get().as<std::string>());
+    EXPECT_FALSE(r);
+    EXPECT_EQ(v, oh.get().as<std::string>());
 }
 
-BOOST_AUTO_TEST_CASE(unpack_referenced_2)
+TEST(MSGPACK_X3_PARSE, unpack_referenced_2)
 {
     std::string v = "ABC";
     std::stringstream ss;
@@ -777,11 +785,11 @@ BOOST_AUTO_TEST_CASE(unpack_referenced_2)
                 return true;
             }
         );
-    BOOST_CHECK(r);
-    BOOST_CHECK_EQUAL(v, oh.get().as<std::string>());
+    EXPECT_TRUE(r);
+    EXPECT_EQ(v, oh.get().as<std::string>());
 }
 
-BOOST_AUTO_TEST_CASE(unpack_zone_1)
+TEST(MSGPACK_X3_PARSE, unpack_zone_1)
 {
     std::string v = "ABC";
     std::stringstream ss;
@@ -790,10 +798,10 @@ BOOST_AUTO_TEST_CASE(unpack_zone_1)
     msgpack::zone z;
     msgpack::object obj =
         msgpack::unpack(z, ss.str().begin(), ss.str().end());
-    BOOST_CHECK_EQUAL(v, obj.as<std::string>());
+    EXPECT_EQ(v, obj.as<std::string>());
 }
 
-BOOST_AUTO_TEST_CASE(unpack_zone_2)
+TEST(MSGPACK_X3_PARSE, unpack_zone_2)
 {
     std::string v = "ABC";
     std::stringstream ss;
@@ -803,13 +811,13 @@ BOOST_AUTO_TEST_CASE(unpack_zone_2)
     bool r;
     msgpack::object obj =
         msgpack::unpack(z, ss.str().begin(), ss.str().end(), r);
-    BOOST_CHECK_EQUAL(v, obj.as<std::string>());
+    EXPECT_EQ(v, obj.as<std::string>());
 
-    BOOST_CHECK(!r);
-    BOOST_CHECK_EQUAL(v, obj.as<std::string>());
+    EXPECT_FALSE(r);
+    EXPECT_EQ(v, obj.as<std::string>());
 }
 
-BOOST_AUTO_TEST_CASE(unpack_zone_3)
+TEST(MSGPACK_X3_PARSE, unpack_zone_3)
 {
     std::string v = "ABC";
     std::stringstream ss;
@@ -829,8 +837,8 @@ BOOST_AUTO_TEST_CASE(unpack_zone_3)
                 return true;
             }
         );
-    BOOST_CHECK(r);
-    BOOST_CHECK_EQUAL(v, obj.as<std::string>());
+    EXPECT_TRUE(r);
+    EXPECT_EQ(v, obj.as<std::string>());
 }
 
 #endif // defined(MSGPACK_USE_X3_PARSE) && MSGPACK_DEFAULT_API_VERSION >= 2

@@ -1,8 +1,19 @@
-FIND_PACKAGE (Threads REQUIRED)
-FIND_PACKAGE (Boost REQUIRED COMPONENTS system filesystem unit_test_framework)
+FIND_PACKAGE (GTest REQUIRED)
+FIND_PACKAGE (ZLIB REQUIRED)
+FIND_PACKAGE (Boost REQUIRED COMPONENTS system filesystem)
+
+INCLUDE_DIRECTORIES (
+  ${GTEST_INCLUDE_DIRS}
+  ${ZLIB_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+)
 
 LIST (APPEND check_PROGRAMS
     regression_runner.cpp
+)
+
+LINK_DIRECTORIES (
+  ${Boost_LIBRARY_DIRS}
 )
 
 FOREACH (source_file ${check_PROGRAMS})
@@ -11,20 +22,14 @@ FOREACH (source_file ${check_PROGRAMS})
         ${source_file_we}
         ${source_file}
     )
-
-    TARGET_COMPILE_DEFINITIONS (${source_file_we} PRIVATE
-        $<IF:$<BOOL:${MSGPACK_USE_STATIC_BOOST}>,,BOOST_TEST_DYN_LINK>)
-
     TARGET_LINK_LIBRARIES (${source_file_we}
-        msgpack-cxx
-        Threads::Threads
-        Boost::filesystem
-        Boost::system
-        Boost::unit_test_framework
+        msgpackcxx
+        ${GTEST_BOTH_LIBRARIES}
+        ${ZLIB_LIBRARIES}
+        ${CMAKE_THREAD_LIBS_INIT}
+        ${Boost_LIBRARIES}
     )
-
     ADD_TEST (${source_file_we} ${source_file_we})
-
     IF ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
       SET_PROPERTY (TARGET ${source_file_we} APPEND_STRING PROPERTY COMPILE_FLAGS "-Wall -Wextra -Wno-mismatched-tags -g")
         IF ("${MSGPACK_SAN}" STREQUAL "ASAN")

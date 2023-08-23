@@ -10,11 +10,12 @@
 #ifndef MSGPACK_V2_CREATE_OBJECT_VISITOR_HPP
 #define MSGPACK_V2_CREATE_OBJECT_VISITOR_HPP
 
+#include <boost/assert.hpp>
+
 #include "msgpack/unpack_decl.hpp"
 #include "msgpack/unpack_exception.hpp"
 #include "msgpack/v2/create_object_visitor_decl.hpp"
 #include "msgpack/v2/null_visitor.hpp"
-#include "msgpack/assert.hpp"
 
 namespace msgpack {
 
@@ -107,7 +108,7 @@ public:
         return true;
     }
     bool visit_str(const char* v, uint32_t size) {
-        MSGPACK_ASSERT(v || size == 0);
+        BOOST_ASSERT(v || size == 0);
         if (size > m_limit.str()) throw msgpack::str_size_overflow("str size overflow");
         msgpack::object* obj = m_stack.back();
         obj->type = msgpack::type::STR;
@@ -131,7 +132,7 @@ public:
         return true;
     }
     bool visit_bin(const char* v, uint32_t size) {
-        MSGPACK_ASSERT(v || size == 0);
+        BOOST_ASSERT(v || size == 0);
         if (size > m_limit.bin()) throw msgpack::bin_size_overflow("bin size overflow");
         msgpack::object* obj = m_stack.back();
         obj->type = msgpack::type::BIN;
@@ -155,7 +156,7 @@ public:
         return true;
     }
     bool visit_ext(const char* v, uint32_t size) {
-        MSGPACK_ASSERT(v || size == 0);
+        BOOST_ASSERT(v || size == 0);
         if (size > m_limit.ext()) throw msgpack::ext_size_overflow("ext size overflow");
         msgpack::object* obj = m_stack.back();
         obj->type = msgpack::type::EXT;
