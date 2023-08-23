@@ -2,6 +2,11 @@
 Changelog for package nao_lola_client
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.1 (2023-08-23)
+------------------
+* revert msgpack-c commit to match those in the iron branch, because newer version of msgpack-c is crashing LoLA
+* Contributors: ijnek
+
 1.1.0 (2023-08-03)
 ------------------
 
