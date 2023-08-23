@@ -32,15 +32,14 @@ struct pack : v2::adaptor::pack<T, Enabler> {
 };
 
 template <typename T, typename Enabler>
-struct object
-    : v2::adaptor::object<
-        T,
-        typename msgpack::enable_if<
-            !msgpack::is_same<T, std::string>::value &&
-            !msgpack::is_array<T>::value,
-            Enabler
-        >::type
-      > {
+struct object<
+    T,
+    Enabler,
+    typename msgpack::enable_if<
+        !msgpack::is_same<T, std::string>::value &&
+        !msgpack::is_array<T>::value
+    >::type>
+    : v2::adaptor::object<T, Enabler> {
 };
 
 template <typename T, typename Enabler>
