@@ -11,10 +11,11 @@
 #define MSGPACK_V1_VREFBUFFER_HPP
 
 #include "msgpack/v1/vrefbuffer_decl.hpp"
-#include "msgpack/assert.hpp"
 
 #include <stdexcept>
 #include <algorithm>
+
+#include <boost/assert.hpp>
 
 #if defined(_MSC_VER)
 // avoiding confliction std::max, std::min, and macro in windows.h
@@ -113,7 +114,7 @@ public:
 public:
     void write(const char* buf, size_t len)
     {
-        MSGPACK_ASSERT(buf || len == 0);
+        BOOST_ASSERT(buf || len == 0);
 
         if (!buf) return;
 
