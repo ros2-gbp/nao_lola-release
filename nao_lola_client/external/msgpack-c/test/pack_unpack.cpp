@@ -1,18 +1,26 @@
 #include <msgpack.hpp>
 
-#define BOOST_TEST_MODULE pack_unpack
-#include <boost/test/unit_test.hpp>
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif //defined(__GNUC__)
+
+#include <gtest/gtest.h>
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif //defined(__GNUC__)
 
 #include <sstream>
 
-BOOST_AUTO_TEST_CASE(pack_num)
+TEST(pack, num)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
 }
 
 
-BOOST_AUTO_TEST_CASE(pack_vector)
+TEST(pack, vector)
 {
     msgpack::sbuffer sbuf;
     std::vector<int> vec;
@@ -23,7 +31,7 @@ BOOST_AUTO_TEST_CASE(pack_vector)
 }
 
 
-BOOST_AUTO_TEST_CASE(pack_to_ostream)
+TEST(pack, to_ostream)
 {
     std::ostringstream stream;
     msgpack::pack(stream, 1);
@@ -45,7 +53,7 @@ struct myclass {
 };
 
 
-BOOST_AUTO_TEST_CASE(pack_myclass)
+TEST(pack, myclass)
 {
     msgpack::sbuffer sbuf;
     myclass m(1, "msgpack");
@@ -53,16 +61,16 @@ BOOST_AUTO_TEST_CASE(pack_myclass)
 }
 
 
-BOOST_AUTO_TEST_CASE(unpack_int_ret_no_offset_no_ref)
+TEST(unpack, int_ret_no_offset_no_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
 
     msgpack::object_handle oh = msgpack::unpack(sbuf.data(), sbuf.size());
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
+    EXPECT_EQ(1, oh.get().as<int>());
 }
 
-BOOST_AUTO_TEST_CASE(unpack_int_ret_offset_no_ref)
+TEST(unpack, int_ret_offset_no_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -70,22 +78,22 @@ BOOST_AUTO_TEST_CASE(unpack_int_ret_offset_no_ref)
     std::size_t off = 0;
 
     msgpack::object_handle oh = msgpack::unpack(sbuf.data(), sbuf.size(), off);
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
-    BOOST_CHECK_EQUAL(off, sbuf.size());
+    EXPECT_EQ(1, oh.get().as<int>());
+    EXPECT_EQ(off, sbuf.size());
 }
 
-BOOST_AUTO_TEST_CASE(unpack_int_ret_no_offset_ref)
+TEST(unpack, int_ret_no_offset_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
     bool referenced;
 
     msgpack::object_handle oh = msgpack::unpack(sbuf.data(), sbuf.size(), referenced);
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
-    BOOST_CHECK(!referenced);
+    EXPECT_EQ(1, oh.get().as<int>());
+    EXPECT_FALSE(referenced);
 }
 
-BOOST_AUTO_TEST_CASE(unpack_int_ret_offset_ref)
+TEST(unpack, int_ret_offset_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -93,23 +101,23 @@ BOOST_AUTO_TEST_CASE(unpack_int_ret_offset_ref)
     bool referenced;
 
     msgpack::object_handle oh = msgpack::unpack(sbuf.data(), sbuf.size(), off, referenced);
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
-    BOOST_CHECK(!referenced);
-    BOOST_CHECK_EQUAL(off, sbuf.size());
+    EXPECT_EQ(1, oh.get().as<int>());
+    EXPECT_FALSE(referenced);
+    EXPECT_EQ(off, sbuf.size());
 }
 
 
-BOOST_AUTO_TEST_CASE(unpack_int_no_offset_no_ref)
+TEST(unpack, int_no_offset_no_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
     msgpack::object_handle oh;
 
     msgpack::unpack(oh, sbuf.data(), sbuf.size());
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
+    EXPECT_EQ(1, oh.get().as<int>());
 }
 
-BOOST_AUTO_TEST_CASE(unpack_int_offset_no_ref)
+TEST(unpack, int_offset_no_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -118,11 +126,11 @@ BOOST_AUTO_TEST_CASE(unpack_int_offset_no_ref)
     std::size_t off = 0;
 
     msgpack::unpack(oh, sbuf.data(), sbuf.size(), off);
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
-    BOOST_CHECK_EQUAL(off, sbuf.size());
+    EXPECT_EQ(1, oh.get().as<int>());
+    EXPECT_EQ(off, sbuf.size());
 }
 
-BOOST_AUTO_TEST_CASE(unpack_int_no_offset_ref)
+TEST(unpack, int_no_offset_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -130,11 +138,11 @@ BOOST_AUTO_TEST_CASE(unpack_int_no_offset_ref)
     bool referenced;
 
     msgpack::unpack(oh, sbuf.data(), sbuf.size(), referenced);
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
-    BOOST_CHECK(!referenced);
+    EXPECT_EQ(1, oh.get().as<int>());
+    EXPECT_FALSE(referenced);
 }
 
-BOOST_AUTO_TEST_CASE(unpack_int_offset_ref)
+TEST(unpack, int_offset_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -143,14 +151,14 @@ BOOST_AUTO_TEST_CASE(unpack_int_offset_ref)
     bool referenced;
 
     msgpack::unpack(oh, sbuf.data(), sbuf.size(), off, referenced);
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
-    BOOST_CHECK(!referenced);
-    BOOST_CHECK_EQUAL(off, sbuf.size());
+    EXPECT_EQ(1, oh.get().as<int>());
+    EXPECT_FALSE(referenced);
+    EXPECT_EQ(off, sbuf.size());
 }
 
 #if MSGPACK_DEFAULT_API_VERSION == 1
 
-BOOST_AUTO_TEST_CASE(unpack_int_pointer_off_no_ref)
+TEST(unpack, int_pointer_off_no_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -167,11 +175,11 @@ BOOST_AUTO_TEST_CASE(unpack_int_pointer_off_no_ref)
 #if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
 #pragma GCC diagnostic pop
 #endif // defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
-    BOOST_CHECK_EQUAL(off, sbuf.size());
+    EXPECT_EQ(1, oh.get().as<int>());
+    EXPECT_EQ(off, sbuf.size());
 }
 
-BOOST_AUTO_TEST_CASE(unpack_int_pointer_off_no_ref_explicit)
+TEST(unpack, int_pointer_off_no_ref_explicit)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -188,11 +196,11 @@ BOOST_AUTO_TEST_CASE(unpack_int_pointer_off_no_ref_explicit)
 #if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
 #pragma GCC diagnostic pop
 #endif // defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
-    BOOST_CHECK_EQUAL(off, sbuf.size());
+    EXPECT_EQ(1, oh.get().as<int>());
+    EXPECT_EQ(off, sbuf.size());
 }
 
-BOOST_AUTO_TEST_CASE(unpack_int_pointer_no_off_ref)
+TEST(unpack, int_pointer_no_off_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -208,11 +216,11 @@ BOOST_AUTO_TEST_CASE(unpack_int_pointer_no_off_ref)
 #if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
 #pragma GCC diagnostic pop
 #endif // defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
-    BOOST_CHECK(!referenced);
+    EXPECT_EQ(1, oh.get().as<int>());
+    EXPECT_FALSE(referenced);
 }
 
-BOOST_AUTO_TEST_CASE(unpack_int_pointer_off_ref)
+TEST(unpack, int_pointer_off_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -229,13 +237,13 @@ BOOST_AUTO_TEST_CASE(unpack_int_pointer_off_ref)
 #if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
 #pragma GCC diagnostic pop
 #endif // defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
-    BOOST_CHECK_EQUAL(off, sbuf.size());
-    BOOST_CHECK(!referenced);
+    EXPECT_EQ(1, oh.get().as<int>());
+    EXPECT_EQ(off, sbuf.size());
+    EXPECT_FALSE(referenced);
 }
 
 
-BOOST_AUTO_TEST_CASE(unpack_int_default_null_pointer)
+TEST(unpack, int_default_null_pointer)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -250,22 +258,22 @@ BOOST_AUTO_TEST_CASE(unpack_int_default_null_pointer)
 #if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
 #pragma GCC diagnostic pop
 #endif // defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
+    EXPECT_EQ(1, oh.get().as<int>());
 }
 
 #endif // MSGPACK_DEFAULT_API_VERSION == 1
 
-BOOST_AUTO_TEST_CASE(unpack_int_zone_no_offset_no_ref)
+TEST(unpack, int_zone_no_offset_no_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
 
     msgpack::zone z;
     msgpack::object obj = msgpack::unpack(z, sbuf.data(), sbuf.size());
-    BOOST_CHECK_EQUAL(1, obj.as<int>());
+    EXPECT_EQ(1, obj.as<int>());
 }
 
-BOOST_AUTO_TEST_CASE(unpack_int_zone_offset_no_ref)
+TEST(unpack, int_zone_offset_no_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -274,11 +282,11 @@ BOOST_AUTO_TEST_CASE(unpack_int_zone_offset_no_ref)
 
     msgpack::zone z;
     msgpack::object obj = msgpack::unpack(z, sbuf.data(), sbuf.size(), off);
-    BOOST_CHECK_EQUAL(1, obj.as<int>());
-    BOOST_CHECK_EQUAL(off, sbuf.size());
+    EXPECT_EQ(1, obj.as<int>());
+    EXPECT_EQ(off, sbuf.size());
 }
 
-BOOST_AUTO_TEST_CASE(unpack_int_zone_no_offset_ref)
+TEST(unpack, int_zone_no_offset_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -286,11 +294,11 @@ BOOST_AUTO_TEST_CASE(unpack_int_zone_no_offset_ref)
 
     msgpack::zone z;
     msgpack::object obj = msgpack::unpack(z, sbuf.data(), sbuf.size(), referenced);
-    BOOST_CHECK_EQUAL(1, obj.as<int>());
-    BOOST_CHECK(!referenced);
+    EXPECT_EQ(1, obj.as<int>());
+    EXPECT_FALSE(referenced);
 }
 
-BOOST_AUTO_TEST_CASE(unpack_int_zone_offset_ref)
+TEST(unpack, int_zone_offset_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -299,13 +307,13 @@ BOOST_AUTO_TEST_CASE(unpack_int_zone_offset_ref)
 
     msgpack::zone z;
     msgpack::object obj = msgpack::unpack(z, sbuf.data(), sbuf.size(), off, referenced);
-    BOOST_CHECK_EQUAL(1, obj.as<int>());
-    BOOST_CHECK(!referenced);
-    BOOST_CHECK_EQUAL(off, sbuf.size());
+    EXPECT_EQ(1, obj.as<int>());
+    EXPECT_FALSE(referenced);
+    EXPECT_EQ(off, sbuf.size());
 }
 
 
-BOOST_AUTO_TEST_CASE(unpack_sequence)
+TEST(unpack, sequence)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -317,19 +325,19 @@ BOOST_AUTO_TEST_CASE(unpack_sequence)
     msgpack::object_handle oh;
 
     msgpack::unpack(oh, sbuf.data(), sbuf.size(), off);
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
+    EXPECT_EQ(1, oh.get().as<int>());
 
     msgpack::unpack(oh, sbuf.data(), sbuf.size(), off);
-    BOOST_CHECK_EQUAL(2, oh.get().as<int>());
+    EXPECT_EQ(2, oh.get().as<int>());
 
     msgpack::unpack(oh, sbuf.data(), sbuf.size(), off);
-    BOOST_CHECK_EQUAL(3, oh.get().as<int>());
+    EXPECT_EQ(3, oh.get().as<int>());
 
-    BOOST_CHECK_EQUAL(off, sbuf.size());
+    EXPECT_EQ(off, sbuf.size());
 }
 
 
-BOOST_AUTO_TEST_CASE(unpack_convert_to_object_handle)
+TEST(unpack, convert_to_object_handle)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -337,29 +345,29 @@ BOOST_AUTO_TEST_CASE(unpack_convert_to_object_handle)
 
     msgpack::unpack(msg, sbuf.data(), sbuf.size());
     msgpack::object_handle oh(msgpack::move(msg));
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
+    EXPECT_EQ(1, oh.get().as<int>());
 
 }
 
-BOOST_AUTO_TEST_CASE(unpack_convert_to_object_handle_direct)
+TEST(unpack, convert_to_object_handle_direct)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
     msgpack::object_handle oh(msgpack::unpack(sbuf.data(), sbuf.size()));
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
+    EXPECT_EQ(1, oh.get().as<int>());
 
 }
 
-BOOST_AUTO_TEST_CASE(unpack_convert_to_object_handle_direct_implicit)
+TEST(unpack, convert_to_object_handle_direct_implicit)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
     msgpack::object_handle oh = msgpack::unpack(sbuf.data(), sbuf.size());
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
+    EXPECT_EQ(1, oh.get().as<int>());
 
 }
 
-BOOST_AUTO_TEST_CASE(unpack_insufficient_bytes_ref)
+TEST(unpack, insufficient_bytes_ref)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 255); // uint8 (2bytes)
@@ -369,19 +377,19 @@ BOOST_AUTO_TEST_CASE(unpack_insufficient_bytes_ref)
     msgpack::object_handle oh;
     try {
         msgpack::unpack(oh, sbuf.data(), 1, off);
-        BOOST_CHECK(false);
+        EXPECT_TRUE(false);
     }
     catch (msgpack::insufficient_bytes const&) {
-        BOOST_CHECK(true);
+        EXPECT_TRUE(true);
 #if MSGPACK_DEFAULT_API_VERSION < 3
-        BOOST_CHECK_EQUAL(off, 0u);
+        EXPECT_EQ(off, 0u);
 #else  // MSGPACK_DEFAULT_API_VERSION < 3
-        BOOST_CHECK_EQUAL(1u, off);
+        EXPECT_EQ(1u, off);
 #endif // MSGPACK_DEFAULT_API_VERSION < 3
     }
 }
 
-BOOST_AUTO_TEST_CASE(unpack_insufficient_bytes_object_handle)
+TEST(unpack, insufficient_bytes_object_handle)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 255); // uint8 (2bytes)
@@ -390,19 +398,19 @@ BOOST_AUTO_TEST_CASE(unpack_insufficient_bytes_object_handle)
 
     try {
         msgpack::object_handle oh(msgpack::unpack(sbuf.data(), 1, off));
-        BOOST_CHECK(false);
+        EXPECT_TRUE(false);
     }
     catch (msgpack::insufficient_bytes const&) {
-        BOOST_CHECK(true);
+        EXPECT_TRUE(true);
 #if MSGPACK_DEFAULT_API_VERSION < 3
-        BOOST_CHECK_EQUAL(off, 0u);
+        EXPECT_EQ(off, 0u);
 #else  // MSGPACK_DEFAULT_API_VERSION < 3
-        BOOST_CHECK_EQUAL(1u, off);
+        EXPECT_EQ(1u, off);
 #endif // MSGPACK_DEFAULT_API_VERSION < 3
     }
 }
 
-BOOST_AUTO_TEST_CASE(unpack_insufficient_bytes_zone)
+TEST(unpack, insufficient_bytes_zone)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 255); // uint8 (2bytes)
@@ -412,19 +420,19 @@ BOOST_AUTO_TEST_CASE(unpack_insufficient_bytes_zone)
     try {
         msgpack::zone z;
         msgpack::unpack(z, sbuf.data(), 1, off);
-        BOOST_CHECK(false);
+        EXPECT_TRUE(false);
     }
     catch (msgpack::insufficient_bytes const&) {
-        BOOST_CHECK(true);
+        EXPECT_TRUE(true);
 #if MSGPACK_DEFAULT_API_VERSION < 3
-        BOOST_CHECK_EQUAL(off, 0u);
+        EXPECT_EQ(off, 0u);
 #else  // MSGPACK_DEFAULT_API_VERSION < 3
-        BOOST_CHECK_EQUAL(1u, off);
+        EXPECT_EQ(1u, off);
 #endif // MSGPACK_DEFAULT_API_VERSION < 3
     }
 }
 
-BOOST_AUTO_TEST_CASE(unpack_parse_error)
+TEST(unpack, parse_error)
 {
     msgpack::sbuffer sbuf;
 
@@ -435,15 +443,15 @@ BOOST_AUTO_TEST_CASE(unpack_parse_error)
     msgpack::object_handle oh;
     try {
         msgpack::unpack(oh, sbuf.data(), sbuf.size());
-        BOOST_CHECK(false);
+        EXPECT_TRUE(false);
     }
     catch (msgpack::parse_error const&) {
         thrown = true;
     }
-    BOOST_CHECK(thrown);
+    EXPECT_TRUE(thrown);
 }
 
-BOOST_AUTO_TEST_CASE(unpack_returned_parse_error)
+TEST(unpack, returned_parse_error)
 {
     msgpack::sbuffer sbuf;
 
@@ -453,15 +461,15 @@ BOOST_AUTO_TEST_CASE(unpack_returned_parse_error)
     bool thrown = false;
     try {
         msgpack::unpack(sbuf.data(), sbuf.size());
-        BOOST_CHECK(false);
+        EXPECT_TRUE(false);
     }
     catch (msgpack::parse_error const&) {
         thrown = true;
     }
-    BOOST_CHECK(thrown);
+    EXPECT_TRUE(thrown);
 }
 
-BOOST_AUTO_TEST_CASE(unpack_zone_parse_error)
+TEST(unpack, zone_parse_error)
 {
     msgpack::sbuffer sbuf;
 
@@ -472,34 +480,34 @@ BOOST_AUTO_TEST_CASE(unpack_zone_parse_error)
     msgpack::zone z;
     try {
         msgpack::unpack(z, sbuf.data(), sbuf.size());
-        BOOST_CHECK(false);
+        EXPECT_TRUE(false);
     }
     catch (msgpack::parse_error const&) {
         thrown = true;
     }
-    BOOST_CHECK(thrown);
+    EXPECT_TRUE(thrown);
 }
 
-BOOST_AUTO_TEST_CASE(unpack_extra_bytes)
+TEST(unpack, extra_bytes)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
 
     msgpack::object_handle oh = msgpack::unpack(sbuf.data(), sbuf.size() + 1);
-    BOOST_CHECK_EQUAL(1, oh.get().as<int>());
+    EXPECT_EQ(1, oh.get().as<int>());
 }
 
-BOOST_AUTO_TEST_CASE(unpack_zone_extra_bytes)
+TEST(unpack, zone_extra_bytes)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
 
     msgpack::zone z;
     msgpack::object obj = msgpack::unpack(z, sbuf.data(), sbuf.size() + 1);
-    BOOST_CHECK_EQUAL(1, obj.as<int>());
+    EXPECT_EQ(1, obj.as<int>());
 }
 
-BOOST_AUTO_TEST_CASE(unpack_int_off_larger_than_length)
+TEST(unpack, int_off_larger_than_length)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, 1);
@@ -513,23 +521,23 @@ BOOST_AUTO_TEST_CASE(unpack_int_off_larger_than_length)
     catch (msgpack::insufficient_bytes const&) {
         thrown = true;
     }
-    BOOST_CHECK(thrown);
-    BOOST_CHECK_EQUAL(off, 2u);
+    EXPECT_TRUE(thrown);
+    EXPECT_EQ(off, 2u);
 }
 
-BOOST_AUTO_TEST_CASE(unpack_empty_array_fix)
+TEST(unpack, empty_array_fix)
 {
     std::string buf;
     buf.push_back(static_cast<char>(0x90u));
     std::size_t off = 0;
 
     msgpack::object_handle oh = msgpack::unpack(buf.data(), buf.size(), off);
-    BOOST_CHECK_EQUAL(oh.get().type, msgpack::type::ARRAY);
-    BOOST_CHECK_EQUAL(oh.get().via.array.size, 0u);
-    BOOST_CHECK_EQUAL(off, 1u);
+    EXPECT_EQ(oh.get().type, msgpack::type::ARRAY);
+    EXPECT_EQ(oh.get().via.array.size, 0u);
+    EXPECT_EQ(off, 1u);
 }
 
-BOOST_AUTO_TEST_CASE(unpack_empty_array_16)
+TEST(unpack, empty_array_16)
 {
     std::string buf;
     buf.push_back(static_cast<char>(0xdcu));
@@ -538,12 +546,12 @@ BOOST_AUTO_TEST_CASE(unpack_empty_array_16)
     std::size_t off = 0;
 
     msgpack::object_handle oh = msgpack::unpack(buf.data(), buf.size(), off);
-    BOOST_CHECK_EQUAL(oh.get().type, msgpack::type::ARRAY);
-    BOOST_CHECK_EQUAL(oh.get().via.array.size, 0u);
-    BOOST_CHECK_EQUAL(off, 3u);
+    EXPECT_EQ(oh.get().type, msgpack::type::ARRAY);
+    EXPECT_EQ(oh.get().via.array.size, 0u);
+    EXPECT_EQ(off, 3u);
 }
 
-BOOST_AUTO_TEST_CASE(unpack_empty_array_32)
+TEST(unpack, empty_array_32)
 {
     std::string buf;
     buf.push_back(static_cast<char>(0xddu));
@@ -554,24 +562,24 @@ BOOST_AUTO_TEST_CASE(unpack_empty_array_32)
     std::size_t off = 0;
 
     msgpack::object_handle oh = msgpack::unpack(buf.data(), buf.size(), off);
-    BOOST_CHECK_EQUAL(oh.get().type, msgpack::type::ARRAY);
-    BOOST_CHECK_EQUAL(oh.get().via.array.size, 0u);
-    BOOST_CHECK_EQUAL(off, 5u);
+    EXPECT_EQ(oh.get().type, msgpack::type::ARRAY);
+    EXPECT_EQ(oh.get().via.array.size, 0u);
+    EXPECT_EQ(off, 5u);
 }
 
-BOOST_AUTO_TEST_CASE(unpack_empty_map_fix)
+TEST(unpack, empty_map_fix)
 {
     std::string buf;
     buf.push_back(static_cast<char>(0x80u));
     std::size_t off = 0;
 
     msgpack::object_handle oh = msgpack::unpack(buf.data(), buf.size(), off);
-    BOOST_CHECK_EQUAL(oh.get().type, msgpack::type::MAP);
-    BOOST_CHECK_EQUAL(oh.get().via.map.size, 0u);
-    BOOST_CHECK_EQUAL(off, 1u);
+    EXPECT_EQ(oh.get().type, msgpack::type::MAP);
+    EXPECT_EQ(oh.get().via.map.size, 0u);
+    EXPECT_EQ(off, 1u);
 }
 
-BOOST_AUTO_TEST_CASE(unpack_empty_map_16)
+TEST(unpack, empty_map_16)
 {
     std::string buf;
     buf.push_back(static_cast<char>(0xdeu));
@@ -580,12 +588,12 @@ BOOST_AUTO_TEST_CASE(unpack_empty_map_16)
     std::size_t off = 0;
 
     msgpack::object_handle oh = msgpack::unpack(buf.data(), buf.size(), off);
-    BOOST_CHECK_EQUAL(oh.get().type, msgpack::type::MAP);
-    BOOST_CHECK_EQUAL(oh.get().via.map.size, 0u);
-    BOOST_CHECK_EQUAL(off, 3u);
+    EXPECT_EQ(oh.get().type, msgpack::type::MAP);
+    EXPECT_EQ(oh.get().via.map.size, 0u);
+    EXPECT_EQ(off, 3u);
 }
 
-BOOST_AUTO_TEST_CASE(unpack_empty_map_32)
+TEST(unpack, empty_map_32)
 {
     std::string buf;
     buf.push_back(static_cast<char>(0xdfu));
@@ -596,7 +604,7 @@ BOOST_AUTO_TEST_CASE(unpack_empty_map_32)
     std::size_t off = 0;
 
     msgpack::object_handle oh = msgpack::unpack(buf.data(), buf.size(), off);
-    BOOST_CHECK_EQUAL(oh.get().type, msgpack::type::MAP);
-    BOOST_CHECK_EQUAL(oh.get().via.map.size, 0u);
-    BOOST_CHECK_EQUAL(off, 5u);
+    EXPECT_EQ(oh.get().type, msgpack::type::MAP);
+    EXPECT_EQ(oh.get().via.map.size, 0u);
+    EXPECT_EQ(off, 5u);
 }

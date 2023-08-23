@@ -1,6 +1,11 @@
+FIND_PACKAGE (GTest REQUIRED)
+FIND_PACKAGE (ZLIB REQUIRED)
 FIND_PACKAGE (Threads REQUIRED)
-FIND_PACKAGE (ZLIB)
-FIND_PACKAGE (Boost REQUIRED COMPONENTS unit_test_framework system)
+
+INCLUDE_DIRECTORIES (
+    ${GTEST_INCLUDE_DIRS}
+    ${ZLIB_INCLUDE_DIRS}
+)
 
 LIST (APPEND check_PROGRAMS
     array_ref.cpp
@@ -41,7 +46,7 @@ IF (MSGPACK_USE_X3_PARSE)
     )
 ENDIF ()
 
-IF (MSGPACK_CXX11 OR MSGPACK_CXX14 OR MSGPACK_CXX17 OR MSGPACK_CXX20)
+IF (MSGPACK_CXX11 OR MSGPACK_CXX17)
     LIST (APPEND check_PROGRAMS
         iterator_cpp11.cpp
         msgpack_cpp11.cpp
@@ -55,15 +60,9 @@ IF (MSGPACK_CXX11 OR MSGPACK_CXX14 OR MSGPACK_CXX17 OR MSGPACK_CXX20)
     )
 ENDIF ()
 
-IF (MSGPACK_CXX17 OR MSGPACK_CXX20)
+IF (MSGPACK_CXX17)
     LIST (APPEND check_PROGRAMS
         msgpack_cpp17.cpp
-    )
-ENDIF ()
-
-IF (MSGPACK_CXX20)
-    LIST (APPEND check_PROGRAMS
-        msgpack_cpp20.cpp
     )
 ENDIF ()
 
@@ -74,19 +73,13 @@ FOREACH (source_file ${check_PROGRAMS})
         ${source_file}
     )
 
-    TARGET_COMPILE_DEFINITIONS (${source_file_we} PRIVATE
-        $<IF:$<BOOL:${MSGPACK_USE_STATIC_BOOST}>,,BOOST_TEST_DYN_LINK>)
-
     TARGET_LINK_LIBRARIES (${source_file_we}
-        msgpack-cxx
-        Boost::system
-        Boost::unit_test_framework
-        Threads::Threads
-        ZLIB::ZLIB
+        msgpackcxx
+        ${GTEST_BOTH_LIBRARIES}
+        ${ZLIB_LIBRARIES}
+        ${CMAKE_THREAD_LIBS_INIT}
     )
-
-    ADD_TEST (NAME ${source_file_we} COMMAND ${source_file_we})
-
+    ADD_TEST (${source_file_we} ${source_file_we})
     IF ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         SET_PROPERTY (TARGET ${source_file_we} APPEND_STRING PROPERTY COMPILE_FLAGS " -Wall -Wextra -Wconversion")
     ENDIF ()
@@ -96,9 +89,9 @@ FOREACH (source_file ${check_PROGRAMS})
 
     IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         IF (CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
-            STRING (REGEX REPLACE "/W[0-4]" "/W3 /WX" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+            STRING(REGEX REPLACE "/W[0-4]" "/W3 /WX" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
         ELSE ()
-            SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /WX")
+            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /WX")
         ENDIF ()
     ENDIF ()
 ENDFOREACH ()
@@ -107,9 +100,8 @@ ADD_EXECUTABLE (
     multi_file
     multi_file1.cpp multi_file2.cpp
 )
-
-TARGET_LINK_LIBRARIES (multi_file
-    msgpack-cxx
+TARGET_INCLUDE_DIRECTORIES (multi_file
+    PRIVATE
+        $<TARGET_PROPERTY:msgpackcxx,INTERFACE_INCLUDE_DIRECTORIES>
 )
-
 ADD_TEST (multi_file multi_file)

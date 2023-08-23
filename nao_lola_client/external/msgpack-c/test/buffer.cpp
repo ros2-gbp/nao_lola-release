@@ -2,32 +2,40 @@
 #include <msgpack/fbuffer.hpp>
 #include <msgpack/zbuffer.hpp>
 
-#define BOOST_TEST_MODULE buffer
-#include <boost/test/unit_test.hpp>
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif //defined(__GNUC__)
+
+#include <gtest/gtest.h>
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif //defined(__GNUC__)
 
 #include <string.h>
 
-BOOST_AUTO_TEST_CASE(sbuffer)
+TEST(buffer, sbuffer)
 {
     msgpack::sbuffer sbuf;
     sbuf.write("a", 1);
     sbuf.write("a", 1);
     sbuf.write("a", 1);
 
-    BOOST_CHECK_EQUAL(3ul, sbuf.size());
-    BOOST_CHECK( memcmp(sbuf.data(), "aaa", 3) == 0 );
+    EXPECT_EQ(3ul, sbuf.size());
+    EXPECT_TRUE( memcmp(sbuf.data(), "aaa", 3) == 0 );
 
     sbuf.clear();
     sbuf.write("a", 1);
     sbuf.write("a", 1);
     sbuf.write("a", 1);
 
-    BOOST_CHECK_EQUAL(3ul, sbuf.size());
-    BOOST_CHECK( memcmp(sbuf.data(), "aaa", 3) == 0 );
+    EXPECT_EQ(3ul, sbuf.size());
+    EXPECT_TRUE( memcmp(sbuf.data(), "aaa", 3) == 0 );
 }
 
 
-BOOST_AUTO_TEST_CASE(vrefbuffer)
+TEST(buffer, vrefbuffer)
 {
     msgpack::vrefbuffer vbuf;
     vbuf.write("a", 1);
@@ -42,8 +50,8 @@ BOOST_AUTO_TEST_CASE(vrefbuffer)
         sbuf.write((const char*)vec[i].iov_base, vec[i].iov_len);
     }
 
-    BOOST_CHECK_EQUAL(3ul, sbuf.size());
-    BOOST_CHECK( memcmp(sbuf.data(), "aaa", 3) == 0 );
+    EXPECT_EQ(3ul, sbuf.size());
+    EXPECT_TRUE( memcmp(sbuf.data(), "aaa", 3) == 0 );
 
 
     vbuf.clear();
@@ -59,11 +67,11 @@ BOOST_AUTO_TEST_CASE(vrefbuffer)
         sbuf.write((const char*)vec[i].iov_base, vec[i].iov_len);
     }
 
-    BOOST_CHECK_EQUAL(3ul, sbuf.size());
-    BOOST_CHECK( memcmp(sbuf.data(), "aaa", 3) == 0 );
+    EXPECT_EQ(3ul, sbuf.size());
+    EXPECT_TRUE( memcmp(sbuf.data(), "aaa", 3) == 0 );
 }
 
-BOOST_AUTO_TEST_CASE(zbuffer)
+TEST(buffer, zbuffer)
 {
     msgpack::zbuffer zbuf;
     zbuf.write("a", 1);
@@ -74,7 +82,7 @@ BOOST_AUTO_TEST_CASE(zbuffer)
     zbuf.flush();
 }
 
-BOOST_AUTO_TEST_CASE(fbuffer)
+TEST(buffer, fbuffer)
 {
 #if defined(_MSC_VER)
     FILE* file;
@@ -82,10 +90,10 @@ BOOST_AUTO_TEST_CASE(fbuffer)
 #else  // defined(_MSC_VER)
     FILE* file = tmpfile();
 #endif // defined(_MSC_VER)
-    BOOST_CHECK( file != NULL );
+    EXPECT_TRUE( file != NULL );
 
     msgpack::fbuffer fbuf(file);
-    BOOST_CHECK_EQUAL(file, fbuf.file());
+    EXPECT_EQ(file, fbuf.file());
 
     fbuf.write("a", 1);
     fbuf.write("a", 1);
@@ -95,9 +103,9 @@ BOOST_AUTO_TEST_CASE(fbuffer)
     rewind(file);
     for (size_t i=0; i < 3; ++i) {
         int ch = fgetc(file);
-        BOOST_CHECK(ch != EOF);
-        BOOST_CHECK_EQUAL('a', static_cast<char>(ch));
+        EXPECT_TRUE(ch != EOF);
+        EXPECT_EQ('a', static_cast<char>(ch));
     }
-    BOOST_CHECK_EQUAL(EOF, fgetc(file));
+    EXPECT_EQ(EOF, fgetc(file));
     fclose(file);
 }
