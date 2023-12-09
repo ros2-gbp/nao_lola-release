@@ -14,12 +14,19 @@
 
 #include <string>
 #include <memory>
+
 #include "nao_lola_client/nao_lola_client.hpp"
 #include "nao_lola_client/msgpack_parser.hpp"
+#include "rcl_interfaces/msg/parameter_descriptor.hpp"
+#include "rcl_interfaces/msg/parameter_type.hpp"
+#include "rcl_interfaces/msg/parameter_value.hpp"
 
-NaoLolaClient::NaoLolaClient()
-: Node("NaoLolaClient")
+#include "conversion.hpp"
+
+NaoLolaClient::NaoLolaClient(const rclcpp::NodeOptions & options)
+: Node("NaoLolaClient", options)
 {
+  declareParameters();
   createPublishers();
   createSubscriptions();
 
@@ -27,7 +34,14 @@ NaoLolaClient::NaoLolaClient()
   receive_thread_ = std::thread(
     [this]() {
       while (rclcpp::ok()) {
-        auto recvData = connection.receive();
+        RecvData recvData;
+        try {
+          recvData = connection.receive();
+        } catch (const std::runtime_error & e) {
+          RCLCPP_ERROR_SKIPFIRST_THROTTLE(get_logger(), *get_clock(), 1000, e.what());
+          continue;
+        }
+
         MsgpackParser parsed(recvData.data(), recvData.size());
 
         accelerometer_pub->publish(parsed.getAccelerometer());
@@ -45,6 +59,19 @@ NaoLolaClient::NaoLolaClient()
         battery_pub->publish(parsed.getBattery());
         robot_config_pub->publish(parsed.getRobotConfig());
 
+        auto stamp = now();
+
+        if (publish_imu_) {
+          auto imu = conversion::toImu(parsed.getAccelerometer(), parsed.getGyroscope());
+          imu.header.stamp = stamp;
+          imu_pub->publish(imu);
+        }
+
+        if (publish_joint_states_) {
+          auto joint_state = conversion::toJointState(parsed.getJointPositions());
+          joint_state.header.stamp = stamp;
+          joint_states_pub->publish(joint_state);
+        }
 
         // In mutex, copy packer
         // Do the pack and send outside mutex to avoid retain lock for a long time
@@ -82,6 +109,15 @@ void NaoLolaClient::createPublishers()
   battery_pub = create_publisher<nao_lola_sensor_msgs::msg::Battery>("sensors/battery", 10);
   robot_config_pub =
     create_publisher<nao_lola_sensor_msgs::msg::RobotConfig>("sensors/robot_config", 10);
+
+  if (publish_joint_states_) {
+    joint_states_pub = create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);
+  }
+
+  if (publish_imu_) {
+    imu_pub = create_publisher<sensor_msgs::msg::Imu>("imu", 10);
+  }
+
   RCLCPP_DEBUG(get_logger(), "Finished initialising publishers");
 }
 
@@ -188,3 +224,31 @@ void NaoLolaClient::createSubscriptions()
     );
   RCLCPP_DEBUG(get_logger(), "Finished creating subscriptions");
 }
+
+void NaoLolaClient::declareParameters()
+{
+  publish_joint_states_ = declare_parameter(
+    "publish_joint_states", rclcpp::ParameterValue(true),
+    rcl_interfaces::msg::ParameterDescriptor()
+    .set__name("publish_joint_states")
+    .set__type(rcl_interfaces::msg::ParameterType::PARAMETER_BOOL)
+    .set__description(
+      "Whether to convert nao_lola sensor_msgs/JointPositions to sensor_msgs/JointState and "
+      "publish it on topic 'joint_states'")
+    .set__read_only(true)
+  ).get<bool>();
+
+  publish_imu_ = declare_parameter(
+    "publish_imu", rclcpp::ParameterValue(true),
+    rcl_interfaces::msg::ParameterDescriptor()
+    .set__name("publish_imu")
+    .set__type(rcl_interfaces::msg::ParameterType::PARAMETER_BOOL)
+    .set__description(
+      "Whether to convert nao_lola sensor_msgs/JointPositions and nao_lola_sensor_msgs/Gyroscope to"
+      " sensor_msgs/Imu and publish it on topic 'imu'")
+    .set__read_only(true)
+  ).get<bool>();
+}
+
+#include "rclcpp_components/register_node_macro.hpp"
+RCLCPP_COMPONENTS_REGISTER_NODE(NaoLolaClient)
