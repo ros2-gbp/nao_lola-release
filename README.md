@@ -1,3 +1,30 @@
+## nao_lola (rolling) - 1.2.0-1
+
+The packages in the `nao_lola` repository were released into the `rolling` distro by running `/usr/bin/bloom-release --rosdistro rolling nao_lola` on `Sat, 09 Dec 2023 01:48:07 -0000`
+
+These packages were released:
+- `nao_lola`
+- `nao_lola_client`
+- `nao_lola_command_msgs`
+- `nao_lola_sensor_msgs`
+
+Version of package(s) in repository `nao_lola`:
+
+- upstream repository: https://github.com/ros-sports/nao_lola.git
+- release repository: https://github.com/ros2-gbp/nao_lola-release.git
+- rosdistro version: `1.1.1-1`
+- old version: `1.1.1-1`
+- new version: `1.2.0-1`
+
+Versions of tools used:
+
+- bloom version: `0.11.2`
+- catkin_pkg version: `1.0.0`
+- rosdep version: `0.22.2`
+- rosdistro version: `0.9.0`
+- vcstools version: `0.1.42`
+
+
 ## nao_lola (rolling) - 1.1.1-1
 
 The packages in the `nao_lola` repository were released into the `rolling` distro by running `/usr/bin/bloom-release --ros-distro rolling nao_lola` on `Wed, 23 Aug 2023 01:18:43 -0000`
