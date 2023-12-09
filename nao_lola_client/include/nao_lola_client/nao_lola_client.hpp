@@ -46,16 +46,19 @@
 #include "nao_lola_command_msgs/msg/joint_stiffnesses.hpp"
 #include "nao_lola_client/connection.hpp"
 #include "nao_lola_client/msgpack_packer.hpp"
+#include "sensor_msgs/msg/imu.hpp"
+#include "sensor_msgs/msg/joint_state.hpp"
 
 class NaoLolaClient : public rclcpp::Node
 {
 public:
-  NaoLolaClient();
+  explicit NaoLolaClient(const rclcpp::NodeOptions & options = rclcpp::NodeOptions{});
   virtual ~NaoLolaClient() {}
 
 private:
   void createPublishers();
   void createSubscriptions();
+  void declareParameters();
 
   rclcpp::Publisher<nao_lola_sensor_msgs::msg::Accelerometer>::SharedPtr accelerometer_pub;
   rclcpp::Publisher<nao_lola_sensor_msgs::msg::Angle>::SharedPtr angle_pub;
@@ -71,6 +74,8 @@ private:
   rclcpp::Publisher<nao_lola_sensor_msgs::msg::Touch>::SharedPtr touch_pub;
   rclcpp::Publisher<nao_lola_sensor_msgs::msg::Battery>::SharedPtr battery_pub;
   rclcpp::Publisher<nao_lola_sensor_msgs::msg::RobotConfig>::SharedPtr robot_config_pub;
+  rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_pub;
+  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_states_pub;
 
   rclcpp::Subscription<nao_lola_command_msgs::msg::JointPositions>::SharedPtr joint_positions_sub;
   rclcpp::Subscription<nao_lola_command_msgs::msg::JointStiffnesses>::SharedPtr
@@ -90,6 +95,9 @@ private:
 
   MsgpackPacker packer;
   std::mutex packer_mutex;
+
+  bool publish_imu_;
+  bool publish_joint_states_;
 };
 
 #endif  // NAO_LOLA_CLIENT__NAO_LOLA_CLIENT_HPP_
