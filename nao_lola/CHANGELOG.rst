@@ -2,6 +2,11 @@
 Changelog for package nao_lola
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.0 (2023-12-09)
+------------------
+* Don't process JointPositions and JointStiffnesses message if message is invalid. This prevents segmentation faults.
+* Contributors: ijnek
+
 1.1.1 (2023-08-23)
 ------------------
 * revert msgpack-c commit to match those in the iron branch, because newer version of msgpack-c is crashing LoLA
