@@ -2,6 +2,11 @@
 Changelog for package nao_lola_client
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.3.0 (2024-04-13)
+------------------
+* optimize header includes from rclcpp and msgpack that were taking long
+* Contributors: Kenji Brameld
+
 1.2.0 (2023-12-09)
 ------------------
 * Publish imu and joint state messages. These features are enabled by default, but can optionally be disabled through the "publish_imu" and "publish_joint_states" parameters.
