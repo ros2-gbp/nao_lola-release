@@ -2,23 +2,23 @@
 Changelog for package nao_lola
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.2.3 (2024-04-13)
+0.1.3 (2024-04-13)
 ------------------
 * Don't process JointPositions and JointStiffnesses message if message is invalid. This prevents segmentation faults.
 * Contributors: ijnek
 
-0.2.2 (2023-05-20)
+0.1.2 (2023-05-20)
 ------------------
 * Retain state of all effectors
 * Send effectors in every cycle
 * Contributors: ijnek
 
-0.2.1 (2023-04-28)
+0.1.1 (2023-04-28)
 ------------------
-* Fix race condition on packer
+* fix race condition on packer
 * Contributors: ijnek
 
-0.2.0 (2022-07-21)
+0.1.0 (2022-07-21)
 ------------------
 * Split off galactic and humble branches
 * Fix status test to use int rather than float
