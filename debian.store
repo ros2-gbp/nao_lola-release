@@ -1,1 +1,1 @@
-{"base": "519fb25", "parent": "debian/rolling/nao_lola_client", "previous": "2e134e7", "trim": "", "trimbase": ""}
+{"base": "fc52de6", "parent": "debian/jazzy/nao_lola_client", "previous": "33dbc93", "trim": "", "trimbase": ""}
