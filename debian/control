@@ -1,0 +1,12 @@
+Source: ros-lyrical-nao-lola
+Section: misc
+Priority: optional
+Maintainer: ijnek <kenjibrameld@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), libboost-all-dev, ros-lyrical-ament-cmake, ros-lyrical-ament-cmake-gtest <!nocheck>, ros-lyrical-ament-lint-auto <!nocheck>, ros-lyrical-ament-lint-common <!nocheck>, ros-lyrical-nao-command-msgs, ros-lyrical-nao-sensor-msgs, ros-lyrical-rclcpp, ros-lyrical-ros-workspace
+Homepage: https://index.ros.org/p/nao_lola/#lyrical
+Standards-Version: 3.9.2
+
+Package: ros-lyrical-nao-lola
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-all-dev, ros-lyrical-nao-command-msgs, ros-lyrical-nao-sensor-msgs, ros-lyrical-rclcpp, ros-lyrical-ros-workspace
+Description: Packages that allow communicating with the NAO's Lola middle-ware.
